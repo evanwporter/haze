@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Data.Attoparsec.Text (parseOnly)
+import Data.Attoparsec.Text
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Text as T
 import Parser
@@ -80,23 +80,50 @@ tests =
             ]
         , testGroup
             "parseComment"
-            [ goldenCommentTest
+            [ goldenParserTest
+                parseComment
                 "simple comment"
                 "test/golden/comment-simple.golden"
                 "$comment hello world $end"
-            , goldenCommentTest
+            , goldenParserTest
+                parseComment
                 "multiline comment"
                 "test/golden/comment-multiline.golden"
                 "$comment hello\nthis is another line\n$end"
-            , goldenCommentTest
+            , goldenParserTest
+                parseComment
                 "empty comment"
                 "test/golden/comment-empty.golden"
                 "$comment $end"
             ]
+        , testGroup
+            "parseDate"
+            [ goldenParserTest
+                parseDate
+                "simple date"
+                "test/golden/date-simple.golden"
+                "$date September 26, 2026 $end"
+            , goldenParserTest
+                parseDate
+                "multiline date"
+                "test/golden/date-multiline.golden"
+                "$date\nSeptember 26, 2026\n$end"
+            , goldenParserTest
+                parseDate
+                "empty date"
+                "test/golden/date-empty.golden"
+                "$date $end"
+            ]
         ]
 
-goldenCommentTest :: TestName -> FilePath -> T.Text -> TestTree
-goldenCommentTest name goldenFile input =
-    goldenVsString name goldenFile $ do
-        let result = parseOnly parseComment input
-        pure . BL.pack $ show result
+goldenParserTest ::
+    (Show a) =>
+    Parser a ->
+    TestName ->
+    FilePath ->
+    T.Text ->
+    TestTree
+goldenParserTest parser name goldenFile input =
+    goldenVsString name goldenFile $
+        pure . BL.pack . show $
+            parseOnly parser input

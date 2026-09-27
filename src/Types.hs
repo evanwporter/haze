@@ -23,7 +23,7 @@ data ValueChangeDumpDefinitions = ValueChangeDumpDefinitions
 -}
 data DeclarationCommand
     = Comment CommentText
-    | DateCmd Date
+    | Date DateText
     | EndDefinitions
     | Scope ScopeType ScopeIdentifier
     | TimeScale TimeNumber TimeUnit
@@ -158,7 +158,7 @@ newtype CommentText = CommentText T.Text
     deriving (Eq, Show)
 
 -- | date_text ::= { ASCII character }
-newtype Date = Date T.Text
+newtype DateText = DateText T.Text
     deriving (Eq, Show)
 
 -- | version_text ::= { ASCII character }

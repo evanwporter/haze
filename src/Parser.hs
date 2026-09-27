@@ -5,7 +5,7 @@ module Parser where
 import Control.Applicative
 import qualified Data.Attoparsec.Text as A
 
--- import qualified Data.Text as T
+import qualified Data.Text as T
 import Types
 
 -- The general pattern here is:
@@ -61,13 +61,22 @@ parseTimeScale = do
     timeNum <- parseTimeNumber
     pure (TimeScale timeNum timeUnit)
 
-parseComment :: A.Parser DeclarationCommand
-parseComment =
-    ( A.string "$comment"
+{- | Accept as input a keyword (Text) and a function that accepts Text and returns
+a DeclarationCommand.
+-}
+parseDeclarationText :: T.Text -> (T.Text -> DeclarationCommand) -> A.Parser DeclarationCommand
+parseDeclarationText keyword constructor =
+    ( A.string keyword
         *> A.skipSpace
         -- A.takeTill is a parser that returns the string until it
         -- hits `$`. Then <$> applies CommentText to the underlying
         -- value that the parser holds which is `Text`
-        *> (Comment . CommentText <$> A.takeTill (== '$'))
+        *> (constructor <$> A.takeTill (== '$'))
         <* A.string "$end"
     )
+
+parseComment :: A.Parser DeclarationCommand
+parseComment = parseDeclarationText "$comment" (Comment . CommentText)
+
+parseDate :: A.Parser DeclarationCommand
+parseDate = parseDeclarationText "$date" (Date . DateText)
