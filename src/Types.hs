@@ -1,7 +1,6 @@
 module Types where
 
 import qualified Data.Text as T
-import qualified Data.Text.Internal.Read as T
 
 -- | value_change_dump_definitions ::=
 --     { declaration_command }{ simulation_command }
