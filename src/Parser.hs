@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Parser where
@@ -5,6 +6,7 @@ module Parser where
 import Control.Applicative
 import qualified Data.Attoparsec.Text as A
 
+import qualified Data.Attoparsec.Combinator as A
 import Data.Char (isSpace)
 import qualified Data.Text as T
 import Types
@@ -182,3 +184,142 @@ parseScope = do
     scopeID <- parseScopeIdentifier <* A.skipSpace
     _ <- A.string "$end"
     return $ Scope scopeType scopeID
+
+parseUpScope :: A.Parser DeclarationCommand
+parseUpScope = do
+    A.string "$upscope" *> A.skipSpace <* A.string "$end"
+    return Upscope
+
+parseEndDefinitions :: A.Parser DeclarationCommand
+parseEndDefinitions = do
+    A.string "$enddefinitions" *> A.skipSpace <* A.string "$end"
+    return EndDefinitions
+
+parseDeclarationCommand :: A.Parser DeclarationCommand
+parseDeclarationCommand = do
+    token <- A.lookAhead $ A.takeWhile1 (not . isSpace)
+    case token of
+        -- We don't need to prefix each parseX with return
+        -- because each parseX already returns
+        "$comment" -> parseComment
+        "$date" -> parseDate
+        "$enddefinitions" -> parseEndDefinitions
+        "$scope" -> parseScope
+        "$timescale" -> parseTimeScale
+        "$upscope" -> parseUpScope
+        "$var" -> parseVar
+        "$version" -> parseVersion
+        _ -> fail "unknown declaration command"
+
+parseDeclarationCommands :: A.Parser [DeclarationCommand]
+parseDeclarationCommands = do
+    declaration <- parseDeclarationCommand
+    case declaration of
+        EndDefinitions -> return [declaration]
+        _ -> do
+            declarationCmds <- parseDeclarationCommands
+            return (declaration : declarationCmds)
+
+parseScalarValueChange :: A.Parser ScalarValueChange
+parseScalarValueChange = do
+    val <- parseValue
+    idCode <- parseIdentifierCode
+    return $ ScalarValueChange val idCode
+
+parseVectorValueChange :: A.Parser VectorValueChange
+parseVectorValueChange = do
+    c <- A.anyChar
+    case c of
+        'b' -> do
+            bin <- A.takeWhile1 (not . isSpace) <* A.skipSpace
+            idCode <- parseIdentifierCode
+            pure $ BinaryLower bin idCode
+        'B' -> do
+            bin <- A.takeWhile1 (not . isSpace) <* A.skipSpace
+            idCode <- parseIdentifierCode
+            pure $ BinaryUpper bin idCode
+        'r' -> do
+            num <- A.double <* A.skipSpace
+            idCode <- parseIdentifierCode
+            pure $ RealLower num idCode
+        'R' -> do
+            num <- A.double <* A.skipSpace
+            idCode <- parseIdentifierCode
+            pure $ RealUpper num idCode
+        _ ->
+            fail "expected vector value change (b|B|r|R)"
+
+parseValueChange :: A.Parser ValueChange
+parseValueChange = do
+    c <- A.peekChar'
+
+    if
+        | c `elem` ['0', '1', 'x', 'X', 'z', 'Z'] ->
+            ScalarChange <$> parseScalarValueChange
+        | c `elem` ['b', 'B', 'r', 'R'] ->
+            VectorChange <$> parseVectorValueChange
+        | otherwise ->
+            fail "unknown value change prefix"
+
+parseValueChanges :: A.Parser [ValueChange]
+parseValueChanges = do
+    val <- parseValueChange <* A.skipSpace
+    c <- A.peekChar
+    case c of
+        Just '$' -> return [val]
+        _ -> do
+            rest <- parseValueChanges
+            return $ val : rest
+
+parseSimulationKeyword :: A.Parser SimulationCommand
+parseSimulationKeyword = do
+    token <- A.takeWhile1 (not . isSpace)
+    A.skipSpace
+
+    case token of
+        "$dumpall" -> do
+            -- TODO Skip space here might not be necessary
+            vals <- parseValueChanges <* A.skipSpace
+            A.string "$end" *> A.skipSpace
+            pure $ DumpAll vals
+        "$dumpoff" -> do
+            vals <- parseValueChanges <* A.skipSpace
+            A.string "$end" *> A.skipSpace
+            pure $ DumpOff vals
+        "$dumpon" -> do
+            vals <- parseValueChanges <* A.skipSpace
+            A.string "$end" *> A.skipSpace
+            pure $ DumpOn vals
+        "$dumpvars" -> do
+            vals <- parseValueChanges <* A.skipSpace
+            A.string "$end" *> A.skipSpace
+            pure $ DumpVars vals
+        "$comment" -> do
+            comment <- CommentText <$> A.takeTill (== '$')
+            A.string "$end" *> A.skipSpace
+            pure $ SimComment comment
+        _ ->
+            fail "unknown simulation keyword"
+
+parseSimulationTime :: A.Parser SimulationCommand
+parseSimulationTime = do
+    _ <- A.char '#'
+    num <- A.decimal
+    return $ SimTime (SimulationTime num)
+
+parseSimulationCommand :: A.Parser SimulationCommand
+parseSimulationCommand = do
+    c <- A.peekChar'
+
+    if
+        | c `elem` ['0', '1', 'x', 'X', 'z', 'Z', 'b', 'B', 'r', 'R'] ->
+            -- We don't return here because this is the exact type that
+            -- we need. The SimValueChange <$> applies the SimValueChange
+            -- to the thing underneath A.Parser
+            SimValueChange <$> parseValueChange
+        | c `elem` ['$'] ->
+            parseSimulationKeyword
+        | c `elem` ['#'] ->
+            parseSimulationTime
+        | otherwise ->
+            fail "unknown simulation command"

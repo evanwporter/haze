@@ -18,6 +18,14 @@ tests :: TestTree
 tests =
     testGroup
         "Parser Tests"
+        [ declarationTests
+        , simulationTests
+        ]
+
+declarationTests :: TestTree
+declarationTests =
+    testGroup
+        "Parser Tests"
         [ testGroup
             "parseValue"
             [ testCase "parses '0'" $
@@ -144,28 +152,171 @@ tests =
                             (RangeSelect "data" (Index 7) (Index 0))
                         )
             ]
+        ]
+
+simulationTests :: TestTree
+simulationTests =
+    testGroup
+        "Simulation Parsers"
+        [ testGroup
+            "parseScalarValueChange"
+            [ testCase "parses scalar 0" $
+                parseOnly parseScalarValueChange "0!"
+                    @?= Right
+                        (ScalarValueChange V0 (IdentifierCode "!"))
+            , testCase "parses scalar 1" $
+                parseOnly parseScalarValueChange "1$"
+                    @?= Right
+                        (ScalarValueChange V1 (IdentifierCode "$"))
+            , testCase "parses scalar x" $
+                parseOnly parseScalarValueChange "x%"
+                    @?= Right
+                        (ScalarValueChange Vx (IdentifierCode "%"))
+            , testCase "parses scalar z" $
+                parseOnly parseScalarValueChange "z&"
+                    @?= Right
+                        (ScalarValueChange Vz (IdentifierCode "&"))
+            ]
         , testGroup
-            "parseScope"
-            [ testCase "parses module scope" $
-                parseOnly parseScope (T.pack "$scope module top $end")
+            "parseVectorValueChange"
+            [ testCase "parses lowercase binary vector" $
+                parseOnly parseVectorValueChange "b1010 #"
                     @?= Right
-                        (Scope Module (ScopeIdentifier "top"))
-            , testCase "parses function scope" $
-                parseOnly parseScope (T.pack "$scope function my_func $end")
+                        (BinaryLower "1010" (IdentifierCode "#"))
+            , testCase "parses uppercase binary vector" $
+                parseOnly parseVectorValueChange "B11110000 !"
                     @?= Right
-                        (Scope Function (ScopeIdentifier "my_func"))
-            , testCase "parses begin scope" $
-                parseOnly parseScope (T.pack "$scope begin block1 $end")
+                        (BinaryUpper "11110000" (IdentifierCode "!"))
+            , testCase "parses binary vector containing x" $
+                parseOnly parseVectorValueChange "bxxxxxxxx #"
                     @?= Right
-                        (Scope Begin (ScopeIdentifier "block1"))
-            , testCase "parses fork scope" $
-                parseOnly parseScope (T.pack "$scope fork forked_block $end")
+                        (BinaryLower "xxxxxxxx" (IdentifierCode "#"))
+            , testCase "parses lowercase real value" $
+                parseOnly parseVectorValueChange "r3.14 $"
                     @?= Right
-                        (Scope Fork (ScopeIdentifier "forked_block"))
-            , testCase "parses task scope" $
-                parseOnly parseScope (T.pack "$scope task do_work $end")
+                        (RealLower 3.14 (IdentifierCode "$"))
+            , testCase "parses uppercase real value" $
+                parseOnly parseVectorValueChange "R-2.5 %"
                     @?= Right
-                        (Scope Task (ScopeIdentifier "do_work"))
+                        (RealUpper (-2.5) (IdentifierCode "%"))
+            ]
+        , testGroup
+            "parseValueChange"
+            [ testCase "dispatches scalar value change" $
+                parseOnly parseValueChange "1!"
+                    @?= Right
+                        ( ScalarChange
+                            (ScalarValueChange V1 (IdentifierCode "!"))
+                        )
+            , testCase "dispatches binary vector value change" $
+                parseOnly parseValueChange "b10000001 #"
+                    @?= Right
+                        ( VectorChange
+                            (BinaryLower "10000001" (IdentifierCode "#"))
+                        )
+            , testCase "dispatches real value change" $
+                parseOnly parseValueChange "r1.5 $"
+                    @?= Right
+                        ( VectorChange
+                            (RealLower 1.5 (IdentifierCode "$"))
+                        )
+            ]
+        , testGroup
+            "parseSimulationTime"
+            [ testCase "parses time zero" $
+                parseOnly parseSimulationTime "#0"
+                    @?= Right
+                        (SimTime (SimulationTime 0))
+            , testCase "parses nonzero time" $
+                parseOnly parseSimulationTime "#2211"
+                    @?= Right
+                        (SimTime (SimulationTime 2211))
+            ]
+        , testGroup
+            "parseSimulationKeyword"
+            [ testCase "parses dumpvars" $
+                parseOnly
+                    parseSimulationKeyword
+                    "$dumpvars bxxxxxxxx # x$ 0% 1& $end"
+                    @?= Right
+                        ( DumpVars
+                            [ VectorChange
+                                (BinaryLower "xxxxxxxx" (IdentifierCode "#"))
+                            , ScalarChange
+                                (ScalarValueChange Vx (IdentifierCode "$"))
+                            , ScalarChange
+                                (ScalarValueChange V0 (IdentifierCode "%"))
+                            , ScalarChange
+                                (ScalarValueChange V1 (IdentifierCode "&"))
+                            ]
+                        )
+            , testCase "parses dumpoff" $
+                parseOnly
+                    parseSimulationKeyword
+                    "$dumpoff 0! x$ $end"
+                    @?= Right
+                        ( DumpOff
+                            [ ScalarChange
+                                (ScalarValueChange V0 (IdentifierCode "!"))
+                            , ScalarChange
+                                (ScalarValueChange Vx (IdentifierCode "$"))
+                            ]
+                        )
+            , testCase "parses dumpon" $
+                parseOnly
+                    parseSimulationKeyword
+                    "$dumpon 1! $end"
+                    @?= Right
+                        ( DumpOn
+                            [ ScalarChange
+                                (ScalarValueChange V1 (IdentifierCode "!"))
+                            ]
+                        )
+            , testCase "parses dumpall" $
+                parseOnly
+                    parseSimulationKeyword
+                    "$dumpall b1010 # $end"
+                    @?= Right
+                        ( DumpAll
+                            [ VectorChange
+                                (BinaryLower "1010" (IdentifierCode "#"))
+                            ]
+                        )
+            ]
+        , testGroup
+            "parseSimulationCommand"
+            [ testCase "dispatches simulation time" $
+                parseOnly parseSimulationCommand "#2303"
+                    @?= Right
+                        (SimTime (SimulationTime 2303))
+            , testCase "dispatches scalar value change" $
+                parseOnly parseSimulationCommand "0'"
+                    @?= Right
+                        ( SimValueChange
+                            ( ScalarChange
+                                (ScalarValueChange V0 (IdentifierCode "'"))
+                            )
+                        )
+            , testCase "dispatches binary vector change" $
+                parseOnly parseSimulationCommand "b10000001 #"
+                    @?= Right
+                        ( SimValueChange
+                            ( VectorChange
+                                (BinaryLower "10000001" (IdentifierCode "#"))
+                            )
+                        )
+            , testCase "dispatches dumpvars" $
+                parseOnly
+                    parseSimulationCommand
+                    "$dumpvars 0! 1$ $end"
+                    @?= Right
+                        ( DumpVars
+                            [ ScalarChange
+                                (ScalarValueChange V0 (IdentifierCode "!"))
+                            , ScalarChange
+                                (ScalarValueChange V1 (IdentifierCode "$"))
+                            ]
+                        )
             ]
         ]
 

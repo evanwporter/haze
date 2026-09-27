@@ -32,6 +32,22 @@ data DeclarationCommand
     | Version VersionText
     deriving (Eq, Show)
 
+{- FOURMOLU_DISABLE -}
+-- Input starts with...   Parse as...                 Constructor
+--
+-- $dumpall               dump command               DumpAll [...]
+-- $dumpoff               dump command               DumpOff [...]
+-- $dumpon                dump command               DumpOn [...]
+-- $dumpvars              dump command               DumpVars [...]
+-- $comment               comment                    SimComment ...
+--
+-- #                      simulation time             SimTime ...
+--
+-- 0,1,x,X,z,Z            scalar value change        SimValueChange ...
+-- b,B                    binary vector change       SimValueChange ...
+-- r,R                    real vector change         SimValueChange ...
+{- FOURMOLU_ENABLE -}
+
 {- | simulation_command ::=
     $dumpall { value_change } $end
     | $dumpoff { value_change } $end
