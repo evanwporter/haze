@@ -6,10 +6,12 @@ import Data.Attoparsec.Text
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import qualified Data.Text.Lazy as TL
 import Parser
 import Test.Tasty
 import Test.Tasty.Golden
 import Test.Tasty.HUnit
+import qualified Text.Pretty.Simple as PS
 import Types
 
 main :: IO ()
@@ -361,5 +363,9 @@ goldenVCDTest parser name inputFile goldenFile =
     goldenVsString name goldenFile $ do
         input <- TIO.readFile inputFile
 
-        pure . BL.pack . show $
-            parseOnly parser input
+        pure . BL.pack $
+            case parseOnly parser input of
+                Left err ->
+                    "Left " ++ show err
+                Right result ->
+                    TL.unpack $ PS.pShowNoColor result
