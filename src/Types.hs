@@ -6,8 +6,8 @@ import qualified Data.Text.Internal.Read as T
 -- | value_change_dump_definitions ::=
 --     { declaration_command }{ simulation_command }
 data ValueChangeDumpDefinitions = ValueChangeDumpDefinitions
-  { declarations :: [DeclarationCommand]
-  , simulations :: [SimulationCommand]
+  { declarations :: [DeclarationCommand],
+    simulations :: [SimulationCommand]
   }
 
 -- | declaration_command ::=
@@ -24,7 +24,6 @@ data DeclarationCommand
   | DateCmd Date
   | EndDefinitions
   | Scope ScopeType ScopeIdentifier
-  | Timescale TimeNumber TimeUnit
   | Upscope
   | Var VarType Size IdentifierCode Reference
   | VersionCmd Version SystemTask
@@ -45,7 +44,6 @@ data SimulationCommand
   | SimComment CommentText
   | SimTime SimulationTime
   | SimValueChange ValueChange
-
 
 -- | scope_type ::=
 --     begin
