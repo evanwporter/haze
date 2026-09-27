@@ -6,8 +6,10 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.HashMap.Strict as HM
 import Data.List (sortOn)
 import qualified Data.Text.Lazy as TL
+import Parser
 import Test.Tasty
 import Test.Tasty.Golden
+import TestUtil
 import qualified Text.Pretty.Simple as PS
 
 import Types
@@ -18,6 +20,25 @@ waveformTests =
     testGroup
         "Waveform Tests"
         [ goldenBuildWaveformTest
+        , waveformIntegrationTests
+        ]
+
+waveformIntegrationTests :: TestTree
+waveformIntegrationTests =
+    testGroup
+        "Waveform Integration Tests"
+        [ goldenFileTransformTest
+            parseVCD
+            buildNormalizedWaveform
+            "builds waveform from sample VCD"
+            "test/vcd/sample.vcd"
+            "test/golden/sample-waveform.golden"
+        , goldenFileTransformTest
+            parseVCD
+            buildNormalizedWaveform
+            "builds waveform from wikipedia VCD"
+            "test/vcd/wikipedia.vcd"
+            "test/golden/wikipedia-waveform.golden"
         ]
 
 goldenBuildWaveformTest :: TestTree
@@ -31,6 +52,13 @@ goldenBuildWaveformTest =
             . PS.pShowNoColor
             . fmap normalizeWaveform
         $ buildWaveform sampleSimulations
+
+buildNormalizedWaveform ::
+    ValueChangeDumpDefinitions ->
+    Either String [(IdentifierCode, [(SimulationTime, WaveValue)])]
+buildNormalizedWaveform vcd =
+    fmap normalizeWaveform $
+        buildWaveform (simulations vcd)
 
 normalizeWaveform ::
     Waveform ->

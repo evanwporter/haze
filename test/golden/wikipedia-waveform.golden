@@ -1,0 +1,108 @@
+[
+    ( IdentifierCode "#"
+    ,
+        [
+            ( SimulationTime 2296
+            , BinaryValue "0"
+            )
+        ,
+            ( SimulationTime 0
+            , BinaryValue "10000001"
+            )
+        ,
+            ( SimulationTime 0
+            , BinaryValue "xxxxxxxx"
+            )
+        ]
+    )
+,
+    ( IdentifierCode "$"
+    ,
+        [
+            ( SimulationTime 2302
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 2296
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "%"
+    ,
+        [
+            ( SimulationTime 0
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ]
+    )
+,
+    ( IdentifierCode "&"
+    ,
+        [
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "'"
+    ,
+        [
+            ( SimulationTime 2211
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "("
+    ,
+        [
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V1
+            )
+        ]
+    )
+,
+    ( IdentifierCode ")"
+    ,
+        [
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ]
+    )
+]

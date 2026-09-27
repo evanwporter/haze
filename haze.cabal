@@ -82,6 +82,7 @@ test-suite haze-test
     main-is:          Test.hs
     hs-source-dirs:   test
     other-modules:    WaveformTest
+                    , TestUtil
     build-depends:    base ^>=4.20.2.0
                     , haze
                     , tasty

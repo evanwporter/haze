@@ -1,0 +1,90 @@
+[
+    ( IdentifierCode "(k"
+    ,
+        [
+            ( SimulationTime 530
+            , BinaryValue "z"
+            )
+        ,
+            ( SimulationTime 505
+            , BinaryValue "10zx1110x11100"
+            )
+        ,
+            ( SimulationTime 0
+            , BinaryValue "x"
+            )
+        ]
+    )
+,
+    ( IdentifierCode "*#"
+    ,
+        [
+            ( SimulationTime 505
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "*$"
+    ,
+        [
+            ( SimulationTime 2010
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 540
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 530
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 520
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 510
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 505
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "*@"
+    ,
+        [
+            ( SimulationTime 505
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+,
+    ( IdentifierCode "{2"
+    ,
+        [
+            ( SimulationTime 505
+            , BinaryValue "1111000101z01x"
+            )
+        ,
+            ( SimulationTime 0
+            , BinaryValue "x"
+            )
+        ]
+    )
+]
