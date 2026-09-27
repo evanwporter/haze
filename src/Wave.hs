@@ -2,6 +2,7 @@ module Wave where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
+import qualified Text.ParserCombinators.ReadP as HM
 import Types
 
 data WaveValue
@@ -9,6 +10,8 @@ data WaveValue
     | BinaryValue T.Text
     | RealValue Double
     deriving (Eq, Show)
+
+type Range = (Int, Int)
 
 type Waveform = HM.HashMap IdentifierCode [(SimulationTime, WaveValue)]
 
@@ -87,3 +90,35 @@ buildWaveform sims = do
     initalWave <- collectInitialValues sims HM.empty
     let wave = parseSims (SimulationTime 0) sims initalWave
     return wave
+
+-- -- | Given a SimulationTime, IdentifierCode and a Wave emit the corresponding WaveValue
+-- emitWaveValue :: SimulationTime -> IdentifierCode -> Waveform -> Maybe WaveValue
+-- emitWaveValue time ident wave = do
+--     wf <- HM.lookup ident wave
+--     -- return
+
+drawWaveValue :: WaveValue -> String
+drawWaveValue value = case value of
+    LogicValue logicVal -> case logicVal of
+        V0 -> "▁▁▁"
+        V1 -> "▇▇▇"
+
+-- drawWave :: Range -> [(SimulationTime, WaveValue)] -> String
+-- drawWave _ [] = ""
+-- -- drawWave _ _:[] = ""
+-- drawWave range (wave: nextWave : rest) =
+--     let
+--         nextWaveTime = fst nextWave
+--         rangeStart = fst range
+--     in
+--         -- If the rangeStart is less than the nextWaveTime
+--         -- then we just make it the WaveValue
+--         if rangeStart < nextWaveTime
+--             then
+
+-- makeWave :: Range -> [(SimulationTime, WaveValue)] -> String
+-- makeWave _ [] = ""
+
+-- makeWave range (wave, rest) = case wave of
+
+-- makeWaves :: [String]
