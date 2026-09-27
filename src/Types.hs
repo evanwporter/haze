@@ -1,6 +1,11 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 module Types where
 
+import Data.Hashable (Hashable)
 import qualified Data.Text as T
+import GHC.Generics (Generic)
 
 {- | value_change_dump_definitions ::=
     { declaration_command }{ simulation_command }
@@ -144,7 +149,7 @@ data VectorValueChange
 
 -- | identifier_code ::= { ASCII character }
 newtype IdentifierCode = IdentifierCode T.Text
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic, Hashable, Ord)
 
 -- | size ::= decimal_number
 newtype Size = Size Int

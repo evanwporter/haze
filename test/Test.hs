@@ -13,6 +13,7 @@ import Test.Tasty.Golden
 import Test.Tasty.HUnit
 import qualified Text.Pretty.Simple as PS
 import Types
+import WaveformTest
 
 main :: IO ()
 main = defaultMain tests
@@ -24,6 +25,7 @@ tests =
         [ declarationTests
         , simulationTests
         , vcdTests
+        , waveformTests
         ]
 
 declarationTests :: TestTree
