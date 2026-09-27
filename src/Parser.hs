@@ -7,6 +7,7 @@ import Control.Applicative
 import qualified Data.Attoparsec.Text as A
 
 import qualified Data.Attoparsec.Combinator as A
+import Data.Attoparsec.Text (parse)
 import Data.Char (isSpace)
 import qualified Data.Text as T
 import Types
@@ -323,3 +324,18 @@ parseSimulationCommand = do
             parseSimulationTime
         | otherwise ->
             fail "unknown simulation command"
+
+parseSimulationCommands :: A.Parser [SimulationCommand]
+parseSimulationCommands = do
+    -- Check if its done first because there can be zero or more
+    -- SimulationCommands.
+    done <- A.atEnd
+    if done
+        then
+            return []
+        else do
+            cmd <- parseSimulationCommand
+            rest <- parseSimulationCommands
+            return $ cmd : rest
+
+-- parseVCD :: A.Parser ValueChangeDumpDefinitions
