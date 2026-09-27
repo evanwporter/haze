@@ -144,6 +144,29 @@ tests =
                             (RangeSelect "data" (Index 7) (Index 0))
                         )
             ]
+        , testGroup
+            "parseScope"
+            [ testCase "parses module scope" $
+                parseOnly parseScope (T.pack "$scope module top $end")
+                    @?= Right
+                        (Scope Module (ScopeIdentifier "top"))
+            , testCase "parses function scope" $
+                parseOnly parseScope (T.pack "$scope function my_func $end")
+                    @?= Right
+                        (Scope Function (ScopeIdentifier "my_func"))
+            , testCase "parses begin scope" $
+                parseOnly parseScope (T.pack "$scope begin block1 $end")
+                    @?= Right
+                        (Scope Begin (ScopeIdentifier "block1"))
+            , testCase "parses fork scope" $
+                parseOnly parseScope (T.pack "$scope fork forked_block $end")
+                    @?= Right
+                        (Scope Fork (ScopeIdentifier "forked_block"))
+            , testCase "parses task scope" $
+                parseOnly parseScope (T.pack "$scope task do_work $end")
+                    @?= Right
+                        (Scope Task (ScopeIdentifier "do_work"))
+            ]
         ]
 
 goldenParserTest ::

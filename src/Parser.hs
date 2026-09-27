@@ -82,6 +82,9 @@ parseComment = parseDeclarationText "$comment" (Comment . CommentText)
 parseDate :: A.Parser DeclarationCommand
 parseDate = parseDeclarationText "$date" (Date . DateText)
 
+parseVersion :: A.Parser DeclarationCommand
+parseVersion = parseDeclarationText "$version" (Version . VersionText)
+
 parseVarType :: A.Parser VarType
 parseVarType =
     (A.string "event" *> pure Event)
@@ -114,6 +117,8 @@ parseIdentifierCode =
     IdentifierCode
         -- We use the `.` since for each character `not . isSpace`
         -- is equivalent to `not (isSpace char)`
+        -- The <$> here allows IdentifierCode to slide in and be applied
+        -- the text that is wrapped by the takeWhile1
         <$> A.takeWhile1 (not . isSpace)
         A.<?> "identifier code"
 
@@ -130,7 +135,6 @@ parseReference =
                 _ <- A.char '['
                 msb <- parseIndex
                 next <- A.peekChar
-
                 case next of
                     Just ':' -> do
                         _ <- A.char ':'
@@ -154,3 +158,27 @@ parseVar = do
     varReference <- parseReference <* A.skipSpace
     _ <- A.string "$end"
     return $ Var varType varSize varIDCode varReference
+
+parseScopeType :: A.Parser ScopeType
+parseScopeType =
+    (A.string "begin" *> pure Begin)
+        <|> (A.string "fork" *> pure Fork)
+        <|> (A.string "function" *> pure Function)
+        <|> (A.string "module" *> pure Module)
+        <|> (A.string "task" *> pure Task)
+        A.<?> "scope type"
+
+-- TODO: Merge with identifier code
+parseScopeIdentifier :: A.Parser ScopeIdentifier
+parseScopeIdentifier =
+    ScopeIdentifier
+        <$> A.takeWhile1 (not . isSpace)
+        A.<?> "scope indentifier"
+
+parseScope :: A.Parser DeclarationCommand
+parseScope = do
+    A.string "$scope" *> A.skipSpace
+    scopeType <- parseScopeType <* A.skipSpace
+    scopeID <- parseScopeIdentifier <* A.skipSpace
+    _ <- A.string "$end"
+    return $ Scope scopeType scopeID

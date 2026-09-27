@@ -19,7 +19,7 @@ data ValueChangeDumpDefinitions = ValueChangeDumpDefinitions
     | $timescale [ time_number time_unit ] $end
     | $upscope $end
     | $var [ var_type size identifier_code reference ] $end
-    | $version [ version_text system_task ] $end
+    | $version [ version_text ] $end
 -}
 data DeclarationCommand
     = Comment CommentText
@@ -29,7 +29,7 @@ data DeclarationCommand
     | TimeScale TimeNumber TimeUnit
     | Upscope
     | Var VarType Size IdentifierCode Reference
-    | VersionCmd Version SystemTask
+    | Version VersionText
     deriving (Eq, Show)
 
 {- | simulation_command ::=
@@ -162,9 +162,5 @@ newtype DateText = DateText T.Text
     deriving (Eq, Show)
 
 -- | version_text ::= { ASCII character }
-newtype Version = Version T.Text
-    deriving (Eq, Show)
-
--- | system_task ::= ${ASCII character}
-newtype SystemTask = SystemTask T.Text
+newtype VersionText = VersionText T.Text
     deriving (Eq, Show)
