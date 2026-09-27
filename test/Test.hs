@@ -114,6 +114,36 @@ tests =
                 "test/golden/date-empty.golden"
                 "$date $end"
             ]
+        , testGroup
+            "parseVar"
+            [ testCase "parses plain identifier variable" $
+                parseOnly parseVar (T.pack "$var wire 8 # data $end")
+                    @?= Right
+                        ( Var
+                            Wire
+                            (Size 8)
+                            (IdentifierCode "#")
+                            (Identifier "data")
+                        )
+            , testCase "parses bit select variable" $
+                parseOnly parseVar (T.pack "$var wire 1 # data[3] $end")
+                    @?= Right
+                        ( Var
+                            Wire
+                            (Size 1)
+                            (IdentifierCode "#")
+                            (BitSelect "data" (Index 3))
+                        )
+            , testCase "parses range select variable" $
+                parseOnly parseVar (T.pack "$var wire 8 # data[7:0] $end")
+                    @?= Right
+                        ( Var
+                            Wire
+                            (Size 8)
+                            (IdentifierCode "#")
+                            (RangeSelect "data" (Index 7) (Index 0))
+                        )
+            ]
         ]
 
 goldenParserTest ::

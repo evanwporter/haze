@@ -5,6 +5,7 @@ module Parser where
 import Control.Applicative
 import qualified Data.Attoparsec.Text as A
 
+import Data.Char (isSpace)
 import qualified Data.Text as T
 import Types
 
@@ -80,3 +81,76 @@ parseComment = parseDeclarationText "$comment" (Comment . CommentText)
 
 parseDate :: A.Parser DeclarationCommand
 parseDate = parseDeclarationText "$date" (Date . DateText)
+
+parseVarType :: A.Parser VarType
+parseVarType =
+    (A.string "event" *> pure Event)
+        <|> (A.string "integer" *> pure Integer)
+        <|> (A.string "parameter" *> pure Parameter)
+        <|> (A.string "real" *> pure Real)
+        <|> (A.string "realtime" *> pure Realtime)
+        <|> (A.string "reg" *> pure Reg)
+        <|> (A.string "supply0" *> pure Supply0)
+        <|> (A.string "supply1" *> pure Supply1)
+        <|> (A.string "time" *> pure Time)
+        <|> (A.string "triand" *> pure Triand)
+        <|> (A.string "trior" *> pure Trior)
+        <|> (A.string "trireg" *> pure Trireg)
+        <|> (A.string "tri0" *> pure Tri0)
+        <|> (A.string "tri1" *> pure Tri1)
+        <|> (A.string "tri" *> pure Tri)
+        <|> (A.string "wand" *> pure Wand)
+        <|> (A.string "wire" *> pure Wire)
+        <|> (A.string "wor" *> pure Wor)
+        A.<?> "var type"
+
+parseSize :: A.Parser Size
+-- <$> is used here to apply Size to the underlying value
+-- of A.decimal (which is a integer)
+parseSize = Size <$> A.decimal A.<?> "size type"
+
+parseIdentifierCode :: A.Parser IdentifierCode
+parseIdentifierCode =
+    IdentifierCode
+        -- We use the `.` since for each character `not . isSpace`
+        -- is equivalent to `not (isSpace char)`
+        <$> A.takeWhile1 (not . isSpace)
+        A.<?> "identifier code"
+
+parseIndex :: A.Parser Index
+parseIndex = Index <$> A.decimal
+
+parseReference :: A.Parser Reference
+parseReference =
+    do
+        name <- A.takeWhile1 (\c -> (not $ isSpace c) && (c /= '['))
+        sel <- A.peekChar
+        case sel of
+            Just '[' -> do
+                _ <- A.char '['
+                msb <- parseIndex
+                next <- A.peekChar
+
+                case next of
+                    Just ':' -> do
+                        _ <- A.char ':'
+                        lsb <- parseIndex
+                        _ <- A.char ']'
+                        return $ RangeSelect name msb lsb
+                    Just ']' -> do
+                        _ <- A.char ']'
+                        return $ BitSelect name msb
+                    _ ->
+                        fail "expected ':' or ']'"
+            _ -> return $ Identifier name
+        A.<?> "reference"
+
+parseVar :: A.Parser DeclarationCommand
+parseVar = do
+    A.string "$var" *> A.skipSpace
+    varType <- parseVarType <* A.skipSpace
+    varSize <- parseSize <* A.skipSpace
+    varIDCode <- parseIdentifierCode <* A.skipSpace
+    varReference <- parseReference <* A.skipSpace
+    _ <- A.string "$end"
+    return $ Var varType varSize varIDCode varReference
