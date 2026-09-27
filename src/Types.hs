@@ -95,6 +95,7 @@ data ScalarValueChange = ScalarValueChange Value IdentifierCode
 
 -- | value ::= 0 | 1 | x | X | z | Z
 data Value = V0 | V1 | Vx | VX | Vz | VZ
+  deriving (Eq, Show)
 
 -- | vector_value_change ::=
 --     b binary_number identifier_code

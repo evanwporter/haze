@@ -53,27 +53,34 @@ extra-doc-files:    CHANGELOG.md
 common warnings
     ghc-options: -Wall
 
-executable haze
-    -- Import common warning flags.
+library
     import:           warnings
-
-    -- .hs or .lhs file containing the Main module.
-    main-is:          Main.hs 
-
-    -- Modules included in this executable, other than Main.
-    other-modules: Types
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-
-    -- Other library packages from which modules are imported.
+    exposed-modules:  Parser, Types
     build-depends:    base ^>=4.20.2.0
                     , attoparsec
                     , text
                     , bytestring
-
-    -- Directories containing source files.
     hs-source-dirs:   src
+    default-language: Haskell2010
 
-    -- Base language which the package is written in.
+executable haze
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.20.2.0
+                    , haze
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite haze-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          Test.hs
+    hs-source-dirs:   test
+    other-modules:
+    build-depends:    base ^>=4.20.2.0
+                    , haze
+                    , tasty
+                    , tasty-hunit
+                    , attoparsec
+                    , text
     default-language: Haskell2010
