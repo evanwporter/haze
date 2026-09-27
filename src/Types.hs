@@ -9,6 +9,7 @@ data ValueChangeDumpDefinitions = ValueChangeDumpDefinitions
     { declarations :: [DeclarationCommand]
     , simulations :: [SimulationCommand]
     }
+    deriving (Eq, Show)
 
 {- | declaration_command ::=
     $comment [ comment_text ] $end
@@ -25,9 +26,11 @@ data DeclarationCommand
     | DateCmd Date
     | EndDefinitions
     | Scope ScopeType ScopeIdentifier
+    | TimeScale TimeNumber TimeUnit
     | Upscope
     | Var VarType Size IdentifierCode Reference
     | VersionCmd Version SystemTask
+    deriving (Eq, Show)
 
 {- | simulation_command ::=
     $dumpall { value_change } $end
@@ -46,6 +49,7 @@ data SimulationCommand
     | SimComment CommentText
     | SimTime SimulationTime
     | SimValueChange ValueChange
+    deriving (Eq, Show)
 
 {- | scope_type ::=
     begin
@@ -55,12 +59,15 @@ data SimulationCommand
     | task
 -}
 data ScopeType = Begin | Fork | Function | Module | Task
+    deriving (Eq, Show)
 
 -- | time_number ::= 1 | 10 | 100
 data TimeNumber = T1 | T10 | T100
+    deriving (Eq, Show)
 
 -- | time_unit ::= s | ms | us | ns | ps | fs
 data TimeUnit = Seconds | MilliSeconds | MicroSeconds | NanoSeconds | PicoSeconds | FemtoSeconds
+    deriving (Eq, Show)
 
 {- | var_type ::=
     event | integer | parameter | real | realtime | reg | supply0 | supply1 | time
@@ -85,18 +92,22 @@ data VarType
     | Wand
     | Wire
     | Wor
+    deriving (Eq, Show)
 
 -- | simulation_time ::= # decimal_number
 newtype SimulationTime = SimulationTime Int
+    deriving (Eq, Show)
 
 {- | value_change ::=
     scalar_value_change
     | vector_value_change
 -}
 data ValueChange = ScalarChange ScalarValueChange | VectorChange VectorValueChange
+    deriving (Eq, Show)
 
 -- | scalar_value_change ::= value identifier_code
 data ScalarValueChange = ScalarValueChange Value IdentifierCode
+    deriving (Eq, Show)
 
 -- | value ::= 0 | 1 | x | X | z | Z
 data Value = V0 | V1 | Vx | VX | Vz | VZ
@@ -113,12 +124,15 @@ data VectorValueChange
     | BinaryUpper T.Text IdentifierCode
     | RealLower Double IdentifierCode
     | RealUpper Double IdentifierCode
+    deriving (Eq, Show)
 
 -- | identifier_code ::= { ASCII character }
 newtype IdentifierCode = IdentifierCode T.Text
+    deriving (Eq, Show)
 
 -- | size ::= decimal_number
 newtype Size = Size Int
+    deriving (Eq, Show)
 
 {- | reference ::=
     identifier
@@ -129,21 +143,28 @@ data Reference
     = Identifier T.Text
     | BitSelect T.Text Index
     | RangeSelect T.Text Index Index
+    deriving (Eq, Show)
 
 -- | index ::= decimal_number
 newtype Index = Index Int
+    deriving (Eq, Show)
 
 -- | scope_identifier ::= { ASCII character }
 newtype ScopeIdentifier = ScopeIdentifier T.Text
+    deriving (Eq, Show)
 
 -- | comment_text ::= { ASCII character }
 newtype CommentText = CommentText T.Text
+    deriving (Eq, Show)
 
 -- | date_text ::= { ASCII character }
 newtype Date = Date T.Text
+    deriving (Eq, Show)
 
 -- | version_text ::= { ASCII character }
 newtype Version = Version T.Text
+    deriving (Eq, Show)
 
 -- | system_task ::= ${ASCII character}
 newtype SystemTask = SystemTask T.Text
+    deriving (Eq, Show)

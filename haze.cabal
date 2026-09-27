@@ -81,6 +81,8 @@ test-suite haze-test
                     , haze
                     , tasty
                     , tasty-hunit
+                    , tasty-golden
                     , attoparsec
                     , text
+                    , bytestring
     default-language: Haskell2010
