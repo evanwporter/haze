@@ -61,8 +61,9 @@ parseTimeScale :: A.Parser DeclarationCommand
 parseTimeScale = do
     _ <- A.string "$timescale"
     A.skipSpace
-    timeUnit <- parseTimeUnit
-    timeNum <- parseTimeNumber
+    timeNum <- parseTimeNumber <* A.skipSpace
+    timeUnit <- parseTimeUnit <* A.skipSpace
+    _ <- A.string "$end"
     pure (TimeScale timeNum timeUnit)
 
 {- | Accept as input a keyword (Text) and a function that accepts Text and returns
@@ -214,6 +215,7 @@ parseDeclarationCommand = do
 
 parseDeclarationCommands :: A.Parser [DeclarationCommand]
 parseDeclarationCommands = do
+    A.skipSpace
     declaration <- parseDeclarationCommand
     case declaration of
         EndDefinitions -> return [declaration]
@@ -310,32 +312,48 @@ parseSimulationTime = do
 
 parseSimulationCommand :: A.Parser SimulationCommand
 parseSimulationCommand = do
-    c <- A.peekChar'
+    c <- A.peekChar
 
-    if
-        | c `elem` ['0', '1', 'x', 'X', 'z', 'Z', 'b', 'B', 'r', 'R'] ->
-            -- We don't return here because this is the exact type that
-            -- we need. The SimValueChange <$> applies the SimValueChange
-            -- to the thing underneath A.Parser
-            SimValueChange <$> parseValueChange
-        | c `elem` ['$'] ->
-            parseSimulationKeyword
-        | c `elem` ['#'] ->
-            parseSimulationTime
-        | otherwise ->
-            fail "unknown simulation command"
+    case c of
+        Nothing ->
+            fail "unexpected end of simulation commands"
+        Just c'
+            | c' `elem` ['0', '1', 'x', 'X', 'z', 'Z', 'b', 'B', 'r', 'R'] ->
+                -- We don't return here because this is the exact type that
+                -- we need. The SimValueChange <$> applies the SimValueChange
+                -- to the thing underneath A.Parser
+                SimValueChange <$> parseValueChange
+            | c' == '$' ->
+                parseSimulationKeyword
+            | c' == '#' ->
+                parseSimulationTime
+            | otherwise ->
+                fail $ "unknown simulation command"
+
+-- parseSimulationCommands :: A.Parser [SimulationCommand]
+-- parseSimulationCommands = do
+--     -- Check if its done first because there can be zero or more
+--     -- SimulationCommands.
+--     done <- A.atEnd
+--     A.skipSpace
+--     if done
+--         then
+--             return []
+--         else do
+--             cmd <- parseSimulationCommand
+--             rest <- parseSimulationCommands
+--             return $ cmd : rest
 
 parseSimulationCommands :: A.Parser [SimulationCommand]
 parseSimulationCommands = do
-    -- Check if its done first because there can be zero or more
-    -- SimulationCommands.
-    done <- A.atEnd
-    if done
-        then
-            return []
-        else do
-            cmd <- parseSimulationCommand
-            rest <- parseSimulationCommands
-            return $ cmd : rest
+    A.skipSpace
+    -- TODO figure out how this works
+    cmds <- A.many' (parseSimulationCommand <* A.skipSpace)
+    A.endOfInput
+    pure cmds
 
--- parseVCD :: A.Parser ValueChangeDumpDefinitions
+parseVCD :: A.Parser ValueChangeDumpDefinitions
+parseVCD = do
+    decs <- parseDeclarationCommands
+    sims <- parseSimulationCommands
+    return $ ValueChangeDumpDefinitions decs sims

@@ -5,6 +5,7 @@ module Main (main) where
 import Data.Attoparsec.Text
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Parser
 import Test.Tasty
 import Test.Tasty.Golden
@@ -20,6 +21,7 @@ tests =
         "Parser Tests"
         [ declarationTests
         , simulationTests
+        , vcdTests
         ]
 
 declarationTests :: TestTree
@@ -77,13 +79,13 @@ declarationTests =
         , testGroup
             "parseTimeScale"
             [ testCase "parses 1 ns timescale" $
-                parseOnly parseTimeScale (T.pack "$timescale ns1")
+                parseOnly parseTimeScale (T.pack "$timescale 1ns $end")
                     @?= Right (TimeScale T1 NanoSeconds)
             , testCase "parses 10 ps timescale" $
-                parseOnly parseTimeScale (T.pack "$timescale ps10")
+                parseOnly parseTimeScale (T.pack "$timescale 10ps $end")
                     @?= Right (TimeScale T10 PicoSeconds)
             , testCase "parses 100 fs timescale" $
-                parseOnly parseTimeScale (T.pack "$timescale fs100")
+                parseOnly parseTimeScale (T.pack "$timescale 100fs $end")
                     @?= Right (TimeScale T100 FemtoSeconds)
             ]
         , testGroup
@@ -320,6 +322,22 @@ simulationTests =
             ]
         ]
 
+vcdTests :: TestTree
+vcdTests =
+    testGroup
+        "VCD Files"
+        [ goldenVCDTest
+            parseVCD
+            "parses sample VCD"
+            "test/vcd/sample.vcd"
+            "test/golden/sample-vcd.golden"
+        , goldenVCDTest
+            parseVCD
+            "parses wikipedia VCD"
+            "test/vcd/wikipedia.vcd"
+            "test/golden/wikipedia-vcd.golden"
+        ]
+
 goldenParserTest ::
     (Show a) =>
     Parser a ->
@@ -329,5 +347,19 @@ goldenParserTest ::
     TestTree
 goldenParserTest parser name goldenFile input =
     goldenVsString name goldenFile $
+        pure . BL.pack . show $
+            parseOnly parser input
+
+goldenVCDTest ::
+    (Show a) =>
+    Parser a ->
+    TestName ->
+    FilePath ->
+    FilePath ->
+    TestTree
+goldenVCDTest parser name inputFile goldenFile =
+    goldenVsString name goldenFile $ do
+        input <- TIO.readFile inputFile
+
         pure . BL.pack . show $
             parseOnly parser input
