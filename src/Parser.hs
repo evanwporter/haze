@@ -7,7 +7,6 @@ import Control.Applicative
 import qualified Data.Attoparsec.Text as A
 
 import qualified Data.Attoparsec.Combinator as A
-import Data.Attoparsec.Text (parse)
 import Data.Char (isSpace)
 import qualified Data.Text as T
 import Types

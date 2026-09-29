@@ -39,7 +39,27 @@ waveformIntegrationTests =
             "builds waveform from wikipedia VCD"
             "test/vcd/wikipedia.vcd"
             "test/golden/wikipedia-waveform.golden"
+        , goldenFileTransformTest
+            parseVCD
+            (buildNormalizedWaveStrings 2200 2302 1)
+            "builds resampled wave strings from wikipedia VCD"
+            "test/vcd/wikipedia.vcd"
+            "test/golden/wikipedia-wave-strings.golden"
         ]
+
+buildNormalizedWaveStrings ::
+    Int ->
+    Int ->
+    Int ->
+    ValueChangeDumpDefinitions ->
+    Either String [(IdentifierCode, String)]
+buildNormalizedWaveStrings start stop step vcd = do
+    waveform <- buildWaveform (simulations vcd)
+
+    let waveStrings =
+            buildWaveString start stop step waveform
+
+    return $ sortOn fst $ HM.toList waveStrings
 
 goldenBuildWaveformTest :: TestTree
 goldenBuildWaveformTest =

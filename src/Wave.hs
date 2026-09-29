@@ -2,7 +2,6 @@ module Wave where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import qualified Text.ParserCombinators.ReadP as HM
 import Types
 
 data WaveValue
@@ -97,28 +96,53 @@ buildWaveform sims = do
 --     wf <- HM.lookup ident wave
 --     -- return
 
-drawWaveValue :: WaveValue -> String
-drawWaveValue value = case value of
-    LogicValue logicVal -> case logicVal of
-        V0 -> "▁▁▁"
-        V1 -> "▇▇▇"
+renderValue :: WaveValue -> Char
+renderValue (LogicValue V0) = '_'
+renderValue (LogicValue V1) = '‾'
+renderValue (LogicValue Vx) = 'x'
+renderValue (LogicValue Vz) = 'z'
+renderValue (LogicValue VX) = 'X'
+renderValue (LogicValue VZ) = 'Z'
+renderValue (BinaryValue _) = '='
+renderValue (RealValue _) = '~'
 
--- drawWave :: Range -> [(SimulationTime, WaveValue)] -> String
--- drawWave _ [] = ""
--- -- drawWave _ _:[] = ""
--- drawWave range (wave: nextWave : rest) =
---     let
---         nextWaveTime = fst nextWave
---         rangeStart = fst range
---     in
---         -- If the rangeStart is less than the nextWaveTime
---         -- then we just make it the WaveValue
---         if rangeStart < nextWaveTime
---             then
+-- AI Generated; figure out what it does
+-- resample :: Int -> Int -> Int -> [(Int, WaveValue)] -> [WaveValue]
+-- resample start stop step changes =
+--     go [start, start + step .. stop] changes
+--   where
+--     go [] _ = []
+--     go _ [] = []
+--     go (t : ts) ((tc, v) : rest) =
+--         case rest of
+--             (tn, _) : _
+--                 | tn <= t -> go (t : ts) rest
+--             _ -> v : go ts ((tc, v) : rest)
 
--- makeWave :: Range -> [(SimulationTime, WaveValue)] -> String
--- makeWave _ [] = ""
+-- TODO: This is terribly inefficient
+resample :: Int -> Int -> Int -> [(SimulationTime, WaveValue)] -> [WaveValue]
+resample start stop step changes =
+    -- map means call sample on every one of these elements
+    map sample [start, start + step .. stop]
+  where
+    orderedChanges = reverse changes
 
--- makeWave range (wave, rest) = case wave of
+    -- where let's you define helper functions or vars used by the function above it
+    sample t =
+        -- takeWhile time is less than or equal to t
+        -- take the last element of the list returned by takeWhile
+        -- take the second element of the tuple returned by last
+        snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
--- makeWaves :: [String]
+resampleWaveform :: Int -> Int -> Int -> Waveform -> HM.HashMap IdentifierCode [WaveValue]
+resampleWaveform start stop step waveform =
+    -- Maps the resample function to every single value in the Waveform
+    HM.map (resample start stop step) waveform
+
+buildWaveString :: Int -> Int -> Int -> Waveform -> HM.HashMap IdentifierCode String
+buildWaveString start stop step waveform =
+    let m = resampleWaveform start stop step waveform
+     in HM.map buildString m
+  where
+    buildString vals =
+        map renderValue vals
