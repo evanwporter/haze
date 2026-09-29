@@ -11,105 +11,104 @@ import Test.Tasty
 import Test.Tasty.Golden
 import TestUtil
 import qualified Text.Pretty.Simple as PS
-
 import Types
 import Wave
 
 waveformTests :: TestTree
 waveformTests =
-    testGroup
-        "Waveform Tests"
-        [ goldenBuildWaveformTest
-        , waveformIntegrationTests
-        ]
+  testGroup
+    "Waveform Tests"
+    [ goldenBuildWaveformTest,
+      waveformIntegrationTests
+    ]
 
 waveformIntegrationTests :: TestTree
 waveformIntegrationTests =
-    testGroup
-        "Waveform Integration Tests"
-        [ goldenFileTransformTest
-            parseVCD
-            buildNormalizedWaveform
-            "builds waveform from sample VCD"
-            "test/vcd/sample.vcd"
-            "test/golden/sample-waveform.golden"
-        , goldenFileTransformTest
-            parseVCD
-            buildNormalizedWaveform
-            "builds waveform from wikipedia VCD"
-            "test/vcd/wikipedia.vcd"
-            "test/golden/wikipedia-waveform.golden"
-        , goldenFileTransformTest
-            parseVCD
-            (buildNormalizedWaveStrings 2200 2302 1)
-            "builds resampled wave strings from wikipedia VCD"
-            "test/vcd/wikipedia.vcd"
-            "test/golden/wikipedia-wave-strings.golden"
-        ]
+  testGroup
+    "Waveform Integration Tests"
+    [ goldenFileTransformTest
+        parseVCD
+        buildNormalizedWaveform
+        "builds waveform from sample VCD"
+        "test/vcd/sample.vcd"
+        "test/golden/sample-waveform.golden",
+      goldenFileTransformTest
+        parseVCD
+        buildNormalizedWaveform
+        "builds waveform from wikipedia VCD"
+        "test/vcd/wikipedia.vcd"
+        "test/golden/wikipedia-waveform.golden",
+      goldenFileTransformTest
+        parseVCD
+        (buildNormalizedWaveStrings 2200 2302 1)
+        "builds resampled wave strings from wikipedia VCD"
+        "test/vcd/wikipedia.vcd"
+        "test/golden/wikipedia-wave-strings.golden"
+    ]
 
 buildNormalizedWaveStrings ::
-    Int ->
-    Int ->
-    Int ->
-    ValueChangeDumpDefinitions ->
-    Either String [(IdentifierCode, String)]
+  Int ->
+  Int ->
+  Int ->
+  ValueChangeDumpDefinitions ->
+  Either String [(IdentifierCode, String)]
 buildNormalizedWaveStrings start stop step vcd = do
-    waveform <- buildWaveform (simulations vcd)
+  waveform <- buildWaveform (simulations vcd)
 
-    let waveStrings =
-            buildWaveString start stop step waveform
+  let waveStrings =
+        buildWaveString start stop step waveform
 
-    return $ sortOn fst $ HM.toList waveStrings
+  return $ sortOn fst $ HM.toList waveStrings
 
 goldenBuildWaveformTest :: TestTree
 goldenBuildWaveformTest =
-    goldenVsString
-        "builds waveform from simulation commands"
-        "test/golden/waveform-basic.golden"
-        $ pure
-            . BL.pack
-            . TL.unpack
-            . PS.pShowNoColor
-            . fmap normalizeWaveform
-        $ buildWaveform sampleSimulations
+  goldenVsString
+    "builds waveform from simulation commands"
+    "test/golden/waveform-basic.golden"
+    $ pure
+      . BL.pack
+      . TL.unpack
+      . PS.pShowNoColor
+      . fmap normalizeWaveform
+    $ buildWaveform sampleSimulations
 
 buildNormalizedWaveform ::
-    ValueChangeDumpDefinitions ->
-    Either String [(IdentifierCode, [(SimulationTime, WaveValue)])]
+  ValueChangeDumpDefinitions ->
+  Either String [(IdentifierCode, [(SimulationTime, WaveValue)])]
 buildNormalizedWaveform vcd =
-    fmap normalizeWaveform $
-        buildWaveform (simulations vcd)
+  fmap normalizeWaveform $
+    buildWaveform (simulations vcd)
 
 normalizeWaveform ::
-    Waveform ->
-    [(IdentifierCode, [(SimulationTime, WaveValue)])]
+  Waveform ->
+  [(IdentifierCode, [(SimulationTime, WaveValue)])]
 normalizeWaveform =
-    sortOn fst . HM.toList
+  sortOn fst . HM.toList
 
 sampleSimulations :: [SimulationCommand]
 sampleSimulations =
-    [ DumpVars
-        [ VectorChange
-            (BinaryLower "xxxxxxxx" (IdentifierCode "#"))
-        , ScalarChange
-            (ScalarValueChange Vx (IdentifierCode "$"))
-        ]
-    , SimTime (SimulationTime 0)
-    , SimValueChange
-        ( VectorChange
-            (BinaryLower "10000001" (IdentifierCode "#"))
-        )
-    , SimValueChange
-        ( ScalarChange
-            (ScalarValueChange V0 (IdentifierCode "$"))
-        )
-    , SimTime (SimulationTime 2296)
-    , SimValueChange
-        ( VectorChange
-            (BinaryLower "0" (IdentifierCode "#"))
-        )
-    , SimValueChange
-        ( ScalarChange
-            (ScalarValueChange V1 (IdentifierCode "$"))
-        )
-    ]
+  [ DumpVars
+      [ VectorChange
+          (BinaryLower "xxxxxxxx" (IdentifierCode "#")),
+        ScalarChange
+          (ScalarValueChange Vx (IdentifierCode "$"))
+      ],
+    SimTime (SimulationTime 0),
+    SimValueChange
+      ( VectorChange
+          (BinaryLower "10000001" (IdentifierCode "#"))
+      ),
+    SimValueChange
+      ( ScalarChange
+          (ScalarValueChange V0 (IdentifierCode "$"))
+      ),
+    SimTime (SimulationTime 2296),
+    SimValueChange
+      ( VectorChange
+          (BinaryLower "0" (IdentifierCode "#"))
+      ),
+    SimValueChange
+      ( ScalarChange
+          (ScalarValueChange V1 (IdentifierCode "$"))
+      )
+  ]
