@@ -8,6 +8,7 @@ import Brick.Widgets.Border
 import qualified Data.HashMap.Strict as HM
 import Data.List (sortOn)
 import qualified Data.Text as T
+import qualified Graphics.Vty as V
 import Haze
 import System.Environment (getArgs)
 import Types
@@ -129,7 +130,9 @@ app =
     App
         { appDraw = drawUI
         , appChooseCursor = neverShowCursor
-        , appHandleEvent = \_ -> return ()
+        , appHandleEvent = \event -> case event of
+            VtyEvent (V.EvKey (V.KChar 'q') []) -> halt
+            _ -> return ()
         , appStartEvent = return ()
         , appAttrMap = const waveAttrMap
         }
