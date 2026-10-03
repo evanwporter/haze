@@ -1,10 +1,10 @@
-module Resample
-  ( DenseWaveValueMap,
+module Resample (
+    DenseWaveValueMap,
     resample,
     resampleWaveform,
     minimumTime,
     maximumTime,
-  )
+)
 where
 
 import qualified Data.HashMap.Strict as HM
@@ -33,35 +33,35 @@ type DenseWaveValueMap = HM.HashMap IdentifierCode [WaveValue]
 resample :: SimulationTime -> SimulationTime -> [(SimulationTime, WaveValue)] -> [WaveValue]
 -- This unwraps the SimulationTime
 resample (SimulationTime start) (SimulationTime stop) changes =
-  -- map means call sample on every one of these elements
-  map sample [start .. stop]
+    -- map means call sample on every one of these elements
+    map sample [start .. stop]
   where
     orderedChanges = reverse changes
 
     -- where let's you define helper functions or vars used by the function above it
     sample t =
-      -- takeWhile time is less than or equal to t
-      -- take the last element of the list returned by takeWhile
-      -- take the second element of the tuple returned by last
-      snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
+        -- takeWhile time is less than or equal to t
+        -- take the last element of the list returned by takeWhile
+        -- take the second element of the tuple returned by last
+        snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
 resampleWaveform :: WaveValueMap -> DenseWaveValueMap
 resampleWaveform waveform =
-  -- Maps the resample function to every single value in the WaveValueMap
-  HM.map (resample (minimumTime waveform) (maximumTime waveform)) waveform
+    -- Maps the resample function to every single value in the WaveValueMap
+    HM.map (resample (minimumTime waveform) (maximumTime waveform)) waveform
 
 minimumTime :: WaveValueMap -> SimulationTime
 minimumTime wf =
-  -- intermediate map
-  -- a map of identifier code to minimum SimulationTime
-  -- let nm = HM.map (minimumBy (comparing fst)) wf
-  --  in fst $ minimumBy (comparing fst) (HM.elems nm)
-  --
-  -- 1) obtain the elements of the waveform. This return a list of lists
-  -- 2) flatten the lists of list into a list
-  -- 3) obtain the minimum by only looking at the first element
-  -- 4) obtain the first element from the resulting tuple
-  fst $ minimumBy (comparing fst) (concat (HM.elems wf))
+    -- intermediate map
+    -- a map of identifier code to minimum SimulationTime
+    -- let nm = HM.map (minimumBy (comparing fst)) wf
+    --  in fst $ minimumBy (comparing fst) (HM.elems nm)
+    --
+    -- 1) obtain the elements of the waveform. This return a list of lists
+    -- 2) flatten the lists of list into a list
+    -- 3) obtain the minimum by only looking at the first element
+    -- 4) obtain the first element from the resulting tuple
+    fst $ minimumBy (comparing fst) (concat (HM.elems wf))
 
 maximumTime :: WaveValueMap -> SimulationTime
 maximumTime wf = fst $ maximumBy (comparing fst) (concat (HM.elems wf))
