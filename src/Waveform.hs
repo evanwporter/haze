@@ -1,6 +1,8 @@
 module Waveform where
 
 import qualified Data.HashMap.Strict as HM
+import Data.List (maximumBy, minimumBy)
+import Data.Ord (comparing)
 import qualified Data.Text as T
 import Types
 
@@ -77,4 +79,37 @@ parseSims time (sim : sims) wave =
 buildWaveValueMap :: [SimulationCommand] -> WaveValueMap
 buildWaveValueMap sims =
     let initalWave = HM.empty
-     in parseSims (SimulationTime 0) sims initalWave
+     in padWave (parseSims (SimulationTime 0) sims initalWave)
+
+{- | Pad both sides so it reaches the minimum and maximum times
+And it also reverses the list
+-}
+padWave :: WaveValueMap -> WaveValueMap
+padWave waves = HM.map (padBothSides) waves
+  where
+    padBothSides = (pad minTime) . reverse . pad (maxTime)
+
+    minTime = minimumTime waves
+    maxTime = maximumTime waves
+
+    pad :: SimulationTime -> [(SimulationTime, WaveValue)] -> [(SimulationTime, WaveValue)]
+    pad _ [] = []
+    pad minTime ((time, value) : rest)
+        | time == minTime = (time, value) : rest
+        | otherwise = (minTime, value) : (time, value) : rest
+
+minimumTime :: WaveValueMap -> SimulationTime
+minimumTime wf =
+    -- intermediate map
+    -- a map of identifier code to minimum SimulationTime
+    -- let nm = HM.map (minimumBy (comparing fst)) wf
+    --  in fst $ minimumBy (comparing fst) (HM.elems nm)
+    --
+    -- 1) obtain the elements of the waveform. This return a list of lists
+    -- 2) flatten the lists of list into a list
+    -- 3) obtain the minimum by only looking at the first element
+    -- 4) obtain the first element from the resulting tuple
+    fst $ minimumBy (comparing fst) (concat (HM.elems wf))
+
+maximumTime :: WaveValueMap -> SimulationTime
+maximumTime wf = fst $ maximumBy (comparing fst) (concat (HM.elems wf))

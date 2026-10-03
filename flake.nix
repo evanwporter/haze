@@ -24,6 +24,7 @@
 								pkg-config
 								zlib
 								haskell-language-server
+								haskellPackages.cabal-gild
 							];
 
 							shellHook = ''
