@@ -32,7 +32,7 @@
     ( IdentifierCode "*$"
     ,
         [
-            ( SimulationTime 2010
+            ( SimulationTime 555
             , LogicValue V1
             )
         ,

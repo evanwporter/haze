@@ -51,13 +51,6 @@ addValuesToWave time (val : vals) wave =
         vals
         (addValueToWave ident time (RealValue value) wave)
 
--- TODO: idk how correct this is. I believe its not required to dump the inital state
-collectInitialValues :: [SimulationCommand] -> Waveform -> Either String Waveform
-collectInitialValues [] _ = Left "No $dumpvars in VCD file"
-collectInitialValues (sim : sims) wave = case sim of
-  DumpVars (vals) -> Right (addValuesToWave (SimulationTime 0) vals wave)
-  _ -> collectInitialValues sims wave
-
 parseSim :: SimulationTime -> SimulationCommand -> Waveform -> (SimulationTime, Waveform)
 parseSim time sim wave = case sim of
   SimValueChange (val) -> case val of

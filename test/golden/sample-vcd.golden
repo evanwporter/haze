@@ -161,7 +161,7 @@ ValueChangeDumpDefinitions
                 )
             )
         , SimTime
-            ( SimulationTime 1000 )
+            ( SimulationTime 545 )
         , DumpOff
             [ ScalarChange
                 ( ScalarValueChange Vx
@@ -185,7 +185,7 @@ ValueChangeDumpDefinitions
                 )
             ]
         , SimTime
-            ( SimulationTime 2000 )
+            ( SimulationTime 550 )
         , DumpOn
             [ ScalarChange
                 ( ScalarValueChange Vz
@@ -209,7 +209,7 @@ ValueChangeDumpDefinitions
                 )
             ]
         , SimTime
-            ( SimulationTime 2010 )
+            ( SimulationTime 555 )
         , SimValueChange
             ( ScalarChange
                 ( ScalarValueChange V1
