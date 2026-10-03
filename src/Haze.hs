@@ -1,14 +1,9 @@
 module Haze where
 
-import Data.HashMap.Internal.Debug (SubHash)
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.IO as TIO
 import Parser (parseText)
-import Render
-import Resample (maximumTime, minimumTime, resample)
-import Transitions (toRenderTicks)
 import Types
-import Waveform (WaveValue, WaveValueMap, buildWaveValueMap)
+import Waveform
 
 data WaveConstruct = WaveConstruct
     { wWaveform :: WaveValueMap
@@ -81,28 +76,3 @@ parseVCDFile path = do
     let timeScale = decl >>= getTimescale
 
     return $ WaveConstruct <$> waveform <*> minTime <*> maxTime <*> timeScale
-
-renderIdentifier :: IdentifierCode -> WaveConstruct -> String
-renderIdentifier ident wave =
-    -- We don't use a do statement here because we aren't returning
-    -- a monad
-    case HM.lookup ident (wWaveform wave) of
-        Nothing -> "Signal Not Found"
-        Just waveValues ->
-            let resampled = resample (wMin wave) (wMax wave) waveValues
-                renderTicks = toRenderTicks resampled
-             in renderWaveTicks defaultColors renderTicks
-
-{- | Render a signal as display-width-safe glyphs for terminal UIs such as
-Brick.  Unlike 'renderIdentifier', this deliberately omits ANSI escape
-sequences: Brick measures those bytes as text even though the terminal does
-not display them, causing the visible waveform to be clipped.
--}
-renderPlainIdentifier :: IdentifierCode -> WaveConstruct -> String
-renderPlainIdentifier ident wave =
-    case HM.lookup ident (wWaveform wave) of
-        Nothing -> "Signal Not Found"
-        Just waveValues ->
-            let resampled = resample (wMin wave) (wMax wave) waveValues
-                renderTicks = toRenderTicks resampled
-             in map (ccChar . tickToColored defaultColors) renderTicks

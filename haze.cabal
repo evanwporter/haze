@@ -55,7 +55,13 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Haze, Parser, Types, Waveform, Transitions, Render, Resample
+    exposed-modules:  Haze
+                    , Parser
+                    , Types
+                    , Waveform
+                    -- , Transitions
+                    -- , Render
+                    -- , Resample
     build-depends:    base ^>=4.20.2.0
                     , attoparsec
                     , text
