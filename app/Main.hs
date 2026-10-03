@@ -5,6 +5,7 @@ module Main where
 import Attributes
 import Brick
 import Brick.Widgets.Border
+import Cursor
 import qualified Data.HashMap.Strict as HM
 import Data.List (sortOn)
 import qualified Data.Text as T
@@ -12,14 +13,6 @@ import qualified Graphics.Vty as V
 import Haze
 import System.Environment (getArgs)
 import Types
-import Waveform
-
-data Name = MainView
-    deriving (Eq, Ord, Show)
-
-data AppState = AppState
-    { entries :: [Widget Name]
-    }
 
 columnsPerTick :: Int
 columnsPerTick = 2
@@ -77,17 +70,14 @@ waveSegmentsToWidget (segment : rest) =
         [] -> Nothing
         nextSegment : _ -> Just nextSegment
 
--- Set the rows that will be displayed
-setEntries :: [Widget Name] -> AppState -> AppState
-setEntries newEntries state =
-    state{entries = newEntries}
-
-initialState :: AppState
-initialState =
+initialState :: WaveConstruct -> AppState
+initialState wave =
     AppState
-        { entries = []
+        { stateWaveConstruct = wave
+        , stateCursor = SimulationTime 0
         }
 
+-- TODO: Figure out what this does
 waveEntries :: WaveConstruct -> [Widget Name]
 waveEntries waveConstruct =
     [ withAttr lowAttr (txt (code <> ": "))
@@ -108,21 +98,26 @@ table (x : xs) =
         <=> hBorder
         <=> table xs
 
-drawUI :: AppState -> [Widget Name]
-drawUI state =
-    [ joinBorders $
+waveformLayer :: AppState -> Widget Name
+waveformLayer state =
+    joinBorders $
         border $
             ( table
                 -- applies our widget creation function to every entry
                 ( map
                     (padLeftRight 1)
                     -- returns the list of entries within state
-                    (entries state)
+                    (waveEntries (stateWaveConstruct state))
                 )
                 -- this vertically places a fill widget which expands to take up
                 -- all unused space
                 <=> fill ' '
             )
+
+drawUI :: AppState -> [Widget Name]
+drawUI state =
+    [ cursorLayer state
+    , waveformLayer state
     ]
 
 app :: App AppState e Name
@@ -132,6 +127,10 @@ app =
         , appChooseCursor = neverShowCursor
         , appHandleEvent = \event -> case event of
             VtyEvent (V.EvKey (V.KChar 'q') []) -> halt
+            VtyEvent (V.EvKey V.KLeft []) ->
+                modify (moveCursor (-1))
+            VtyEvent (V.EvKey V.KRight []) ->
+                modify (moveCursor 1)
             _ -> return ()
         , appStartEvent = return ()
         , appAttrMap = const waveAttrMap
@@ -146,8 +145,7 @@ main = do
             case waveConstructWrapped of
                 Left err -> putStrLn err
                 Right waveConstruct -> do
-                    let state = setEntries (waveEntries waveConstruct) initialState
-                    _ <- defaultMain app state
+                    _ <- defaultMain app (initialState waveConstruct)
                     return ()
             putStrLn $ "Command was: " ++ cmd
         _ ->

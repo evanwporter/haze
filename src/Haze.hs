@@ -1,7 +1,14 @@
-module Haze where
+module Haze (
+    module Haze,
+    module Parser,
+    module Types,
+    module Waveform,
+)
+where
 
+import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.IO as TIO
-import Parser (parseText)
+import Parser
 import Types
 import Waveform
 

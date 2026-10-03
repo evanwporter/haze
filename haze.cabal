@@ -83,20 +83,11 @@ executable haze
                     , unordered-containers
     hs-source-dirs:   app
     other-modules:    Attributes
+                    , Cursor
+                    , Util
+                    , Types
     default-language: Haskell2010
     ghc-options: -threaded
-
-executable show-waves
-    import:           warnings
-    main-is:          ShowWaves.hs
-    build-depends:    base ^>=4.20.2.0
-                    , haze
-                    , text
-                    , attoparsec
-                    , unordered-containers
-                    , ansi-terminal
-    hs-source-dirs:   app
-    default-language: Haskell2010
 
 test-suite haze-test
     import:           warnings
