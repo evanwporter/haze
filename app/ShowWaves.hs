@@ -13,7 +13,7 @@ import System.Environment (getArgs)
 import System.IO (hIsTerminalDevice, stdout)
 import Transitions
 import Types
-import Wave
+import Waveform
 
 main :: IO ()
 main = do
@@ -46,13 +46,12 @@ main = do
       putStrLn ""
 
       -- Resample and display each signal
-      let step = max 1 ((tMax - tMin) `div` 50) -- Show ~50 time units
-      mapM_ (displaySignal isTerm wf tMin tMax step) signals
+      mapM_ (displaySignal isTerm wf tMin tMax) signals
 
-displaySignal :: Bool -> Waveform -> Int -> Int -> Int -> (IdentifierCode, [(SimulationTime, WaveValue)]) -> IO ()
-displaySignal useColors wf tMin tMax step (ident, changes) = do
+displaySignal :: Bool -> Waveform -> Int -> Int -> (IdentifierCode, [(SimulationTime, WaveValue)]) -> IO ()
+displaySignal useColors wf tMin tMax (ident, changes) = do
   let IdentifierCode code = ident
-  let resampled = resample tMin tMax step changes
+  let resampled = resample tMin tMax changes
   let ticks = sampleWaveform resampled 0
   let rendered =
         renderWaveTicksColored defaultColors ticks

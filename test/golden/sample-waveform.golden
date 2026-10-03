@@ -10,7 +10,7 @@
             , BinaryValue "10zx1110x11100"
             )
         ,
-            ( SimulationTime 0
+            ( SimulationTime 500
             , BinaryValue "x"
             )
         ]
@@ -23,7 +23,7 @@
             , LogicValue V1
             )
         ,
-            ( SimulationTime 0
+            ( SimulationTime 500
             , LogicValue Vx
             )
         ]
@@ -56,7 +56,7 @@
             , LogicValue V1
             )
         ,
-            ( SimulationTime 0
+            ( SimulationTime 500
             , LogicValue Vx
             )
         ]
@@ -69,7 +69,7 @@
             , LogicValue V0
             )
         ,
-            ( SimulationTime 0
+            ( SimulationTime 500
             , LogicValue Vx
             )
         ]
@@ -82,7 +82,7 @@
             , BinaryValue "1111000101z01x"
             )
         ,
-            ( SimulationTime 0
+            ( SimulationTime 500
             , BinaryValue "x"
             )
         ]

@@ -1,4 +1,4 @@
-module Wave where
+module Waveform where
 
 import qualified Data.HashMap.Strict as HM
 import Data.List (maximumBy, minimumBy)
@@ -58,10 +58,6 @@ collectInitialValues (sim : sims) wave = case sim of
   DumpVars (vals) -> Right (addValuesToWave (SimulationTime 0) vals wave)
   _ -> collectInitialValues sims wave
 
--- parseSimulations :: [SimulationCommand] ->
-
--- buildWave :: IdentifierCode -> Waveform -> ValueChange
-
 parseSim :: SimulationTime -> SimulationCommand -> Waveform -> (SimulationTime, Waveform)
 parseSim time sim wave = case sim of
   SimValueChange (val) -> case val of
@@ -92,26 +88,10 @@ buildWaveform sims =
   let initalWave = HM.empty
    in parseSims (SimulationTime 0) sims initalWave
 
--- -- | Given a SimulationTime, IdentifierCode and a Wave emit the corresponding WaveValue
--- emitWaveValue :: SimulationTime -> IdentifierCode -> Waveform -> Maybe WaveValue
--- emitWaveValue time ident wave = do
---     wf <- HM.lookup ident wave
---     -- return
-
-renderValue :: WaveValue -> Char
-renderValue (LogicValue V0) = '_'
-renderValue (LogicValue V1) = '‾'
-renderValue (LogicValue Vx) = 'x'
-renderValue (LogicValue Vz) = 'z'
-renderValue (LogicValue VX) = 'X'
-renderValue (LogicValue VZ) = 'Z'
-renderValue (BinaryValue _) = '='
-renderValue (RealValue _) = '~'
-
 -- AI Generated; figure out what it does
 -- resample :: Int -> Int -> Int -> [(Int, WaveValue)] -> [WaveValue]
--- resample start stop step changes =
---     go [start, start + step .. stop] changes
+-- resample start stop 1 changes =
+--     go [start, start + 1 .. stop] changes
 --   where
 --     go [] _ = []
 --     go _ [] = []
@@ -122,10 +102,10 @@ renderValue (RealValue _) = '~'
 --             _ -> v : go ts ((tc, v) : rest)
 
 -- TODO: This is terribly inefficient
-resample :: Int -> Int -> Int -> [(SimulationTime, WaveValue)] -> [WaveValue]
-resample start stop step changes =
+resample :: Int -> Int -> [(SimulationTime, WaveValue)] -> [WaveValue]
+resample start stop changes =
   -- map means call sample on every one of these elements
-  map sample [start, start + step .. stop]
+  map sample [start .. stop]
   where
     orderedChanges = reverse changes
 
@@ -136,26 +116,12 @@ resample start stop step changes =
       -- take the second element of the tuple returned by last
       snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
-resampleWaveform :: Int -> Int -> Int -> Waveform -> HM.HashMap IdentifierCode [WaveValue]
-resampleWaveform start stop step waveform =
-  -- Maps the resample function to every single value in the Waveform
-  HM.map (resample start stop step) waveform
-
-buildWaveString :: Int -> Int -> Int -> Waveform -> HM.HashMap IdentifierCode String
-buildWaveString start stop step waveform =
-  let m = resampleWaveform start stop step waveform
-   in HM.map buildString m
-  where
-    buildString vals =
-      map renderValue vals
-
-allTogether :: ValueChangeDumpDefinitions -> HM.HashMap IdentifierCode String
-allTogether definitions =
-  -- let dec = (declarations definitions)
-  let wf = buildWaveform (simulations definitions)
-      (SimulationTime minTime) = minimumTime wf
-      (SimulationTime maxTime) = maximumTime wf
-   in buildWaveString minTime maxTime 5 wf
+resampleWaveform :: Waveform -> HM.HashMap IdentifierCode [WaveValue]
+resampleWaveform waveform =
+  let SimulationTime start = minimumTime waveform
+      SimulationTime stop = maximumTime waveform
+   in -- Maps the resample function to every single value in the Waveform
+      HM.map (resample start stop) waveform
 
 minimumTime :: Waveform -> SimulationTime
 minimumTime wf =

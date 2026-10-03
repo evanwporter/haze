@@ -2,7 +2,7 @@ module Transitions where
 
 import qualified Data.Text as T
 import Types
-import Wave
+import Waveform
 
 -- TODO: Implement null state
 

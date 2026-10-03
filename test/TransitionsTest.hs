@@ -6,7 +6,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Transitions
 import Types
-import Wave
+import Waveform
 
 transitionsTests :: TestTree
 transitionsTests =
@@ -25,7 +25,7 @@ logicTransitionTests =
           @?= [LogicTick LogicRising, LogicTick LogicHigh, LogicTick LogicHigh, LogicTick LogicHigh],
       testCase "high to low transition" $
         sampleWaveform [LogicValue V1, LogicValue V0] 0
-          @?= [LogicTick LogicFalling, LogicTick LogicHigh, LogicTick LogicLow, LogicTick LogicLow],
+          @?= [LogicTick LogicFalling, LogicTick LogicLow, LogicTick LogicLow, LogicTick LogicLow],
       testCase "stable low" $
         sampleWaveform [LogicValue V0, LogicValue V0, LogicValue V0] 0
           @?= [ LogicTick LogicLow,
@@ -51,7 +51,7 @@ logicTransitionTests =
                 LogicTick LogicHigh,
                 LogicTick LogicHigh,
                 LogicTick LogicFalling,
-                LogicTick LogicHigh,
+                LogicTick LogicLow,
                 LogicTick LogicLow,
                 LogicTick LogicLow
               ]

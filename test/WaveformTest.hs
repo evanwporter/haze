@@ -12,7 +12,7 @@ import Test.Tasty.Golden
 import TestUtil
 import qualified Text.Pretty.Simple as PS
 import Types
-import Wave
+import Waveform
 
 waveformTests :: TestTree
 waveformTests =
@@ -37,25 +37,8 @@ waveformIntegrationTests =
         buildNormalizedWaveform
         "builds waveform from wikipedia VCD"
         "test/vcd/wikipedia.vcd"
-        "test/golden/wikipedia-waveform.golden",
-      goldenFileTransformTest
-        parseVCD
-        (buildNormalizedWaveStrings 2200 2302 1)
-        "builds resampled wave strings from wikipedia VCD"
-        "test/vcd/wikipedia.vcd"
-        "test/golden/wikipedia-wave-strings.golden"
+        "test/golden/wikipedia-waveform.golden"
     ]
-
-buildNormalizedWaveStrings ::
-  Int ->
-  Int ->
-  Int ->
-  ValueChangeDumpDefinitions ->
-  Either String [(IdentifierCode, String)]
-buildNormalizedWaveStrings start stop step vcd =
-  let waveform = buildWaveform (simulations vcd)
-      waveStrings = buildWaveString start stop step waveform
-  in Right $ sortOn fst $ HM.toList waveStrings
 
 goldenBuildWaveformTest :: TestTree
 goldenBuildWaveformTest =

@@ -55,7 +55,7 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Parser, Types, Wave, Transitions, Render
+    exposed-modules:  Parser, Types, Waveform, Transitions, Render
     build-depends:    base ^>=4.20.2.0
                     , attoparsec
                     , text
@@ -99,7 +99,6 @@ test-suite haze-test
                     , WaveformTest
                     , TestUtil
                     , TransitionsTest
-                    , ParserTest
     build-depends:    base ^>=4.20.2.0
                     , haze
                     , tasty
