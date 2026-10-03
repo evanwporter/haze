@@ -1,4 +1,11 @@
-module Resample where
+module Resample
+  ( DenseWaveValueMap,
+    resample,
+    resampleWaveform,
+    minimumTime,
+    maximumTime,
+  )
+where
 
 import qualified Data.HashMap.Strict as HM
 import Data.List (maximumBy, minimumBy)
@@ -6,7 +13,7 @@ import Data.Ord (comparing)
 import Types
 import Waveform
 
-type Wave = HM.HashMap IdentifierCode [WaveValue]
+type DenseWaveValueMap = HM.HashMap IdentifierCode [WaveValue]
 
 -- AI Generated; figure out what it does
 -- resample :: Int -> Int -> Int -> [(Int, WaveValue)] -> [WaveValue]
@@ -23,8 +30,9 @@ type Wave = HM.HashMap IdentifierCode [WaveValue]
 
 -- TODO: This is terribly inefficient
 -- Converts a sparse list of (SimulationTime, WaveValue) pairs into a dense list of [WaveValue]
-resample :: Int -> Int -> [(SimulationTime, WaveValue)] -> [WaveValue]
-resample start stop changes =
+resample :: SimulationTime -> SimulationTime -> [(SimulationTime, WaveValue)] -> [WaveValue]
+-- This unwraps the SimulationTime
+resample (SimulationTime start) (SimulationTime stop) changes =
   -- map means call sample on every one of these elements
   map sample [start .. stop]
   where
@@ -37,12 +45,10 @@ resample start stop changes =
       -- take the second element of the tuple returned by last
       snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
-resampleWaveform :: WaveValueMap -> Wave
+resampleWaveform :: WaveValueMap -> DenseWaveValueMap
 resampleWaveform waveform =
-  let SimulationTime start = minimumTime waveform
-      SimulationTime stop = maximumTime waveform
-   in -- Maps the resample function to every single value in the WaveValueMap
-      HM.map (resample start stop) waveform
+  -- Maps the resample function to every single value in the WaveValueMap
+  HM.map (resample (minimumTime waveform) (maximumTime waveform)) waveform
 
 minimumTime :: WaveValueMap -> SimulationTime
 minimumTime wf =

@@ -98,7 +98,7 @@ generatedTicks vcdFile = do
       Right vcd ->
         let waveform = buildWaveValueMap (simulations vcd)
             resampled = resampleWaveform waveform
-            withTicks = map (\(ident, vals) -> (ident, toRenderTicks vals 0)) (HM.toList resampled)
+            withTicks = map (\(ident, vals) -> (ident, toRenderTicks vals)) (HM.toList resampled)
             normalized = sortOn fst withTicks
          in TL.unpack $ PS.pShowNoColor normalized
 
@@ -117,7 +117,7 @@ coloredChars vcdFile = do
          in TL.unpack $ PS.pShowNoColor normalized
   where
     toColoredChars (ident, values) =
-      let ticks = toRenderTicks values 0
+      let ticks = toRenderTicks values
           colored = map (tickToColored defaultColors) ticks
        in (ident, colored)
 
@@ -135,5 +135,5 @@ renderedOutput vcdFile = do
          in unlines rendered
   where
     renderSignal (IdentifierCode code, values) =
-      let ticks = toRenderTicks values 0
+      let ticks = toRenderTicks values
        in T.unpack code ++ ": " ++ renderWaveTicks defaultColors ticks
