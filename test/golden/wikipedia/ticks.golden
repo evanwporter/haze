@@ -4615,6 +4615,25 @@
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick
+            ( VectorStable
+                ( Just '0' )
+            )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
+        , VectorTick ( VectorStable Nothing )
         ]
     )
 ,

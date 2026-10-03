@@ -66,5 +66,11 @@ sampleWaveform (curr : next : rest) index =
           VectorTick (VectorStable (Nothing))
             : VectorTick (VectorStable (Nothing))
             : sampleWaveform (next : rest) (index + 1)
+      | v1 /= v2 ->
+          let leftChar = if index < T.length v1 then Just (T.index v1 index) else Nothing
+              rightChar = if 0 < T.length v2 then Just (T.index v2 0) else Nothing
+           in VectorTick (VectorStable (leftChar))
+                : VectorTick (VectorStable (rightChar))
+                : sampleWaveform (next : rest) (1)
       | otherwise -> []
     _ -> []

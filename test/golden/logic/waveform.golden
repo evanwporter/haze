@@ -94,4 +94,238 @@
             )
         ]
     )
+,
+    ( IdentifierCode "%"
+    ,
+        [
+            ( SimulationTime 50
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 49
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 48
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 47
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 46
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 45
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 44
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 43
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 42
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 41
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 40
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 39
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 38
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 37
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 36
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 35
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 34
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 33
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 32
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 31
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 30
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 29
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 28
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 27
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 26
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 25
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 24
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 23
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 22
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 21
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 20
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 19
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 18
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 17
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 16
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 15
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 14
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 13
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 12
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 11
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 10
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 9
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 8
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 7
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 6
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 5
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 4
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 3
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 2
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 1
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ]
+    )
+,
+    ( IdentifierCode "&"
+    ,
+        [
+            ( SimulationTime 40
+            , BinaryValue "11110000"
+            )
+        ,
+            ( SimulationTime 30
+            , BinaryValue "00001111"
+            )
+        ,
+            ( SimulationTime 20
+            , BinaryValue "00000010"
+            )
+        ,
+            ( SimulationTime 10
+            , BinaryValue "00000001"
+            )
+        ,
+            ( SimulationTime 0
+            , BinaryValue "00000000"
+            )
+        ]
+    )
 ]
