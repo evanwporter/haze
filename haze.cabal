@@ -55,13 +55,14 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Parser, Types, Wave, Transitions
+    exposed-modules:  Parser, Types, Wave, Transitions, Render
     build-depends:    base ^>=4.20.2.0
                     , attoparsec
                     , text
                     , bytestring
                     , unordered-containers
                     , hashable
+                    , ansi-terminal
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -77,13 +78,28 @@ executable haze
     default-language: Haskell2010
     ghc-options: -threaded
 
+executable show-waves
+    import:           warnings
+    main-is:          ShowWaves.hs
+    build-depends:    base ^>=4.20.2.0
+                    , haze
+                    , text
+                    , attoparsec
+                    , unordered-containers
+                    , ansi-terminal
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
 test-suite haze-test
     import:           warnings
     type:             exitcode-stdio-1.0
     main-is:          Test.hs
     hs-source-dirs:   test
-    other-modules:    WaveformTest
+    other-modules:    ParserTest
+                    , WaveformTest
                     , TestUtil
+                    , TransitionsTest
+                    , ParserTest
     build-depends:    base ^>=4.20.2.0
                     , haze
                     , tasty

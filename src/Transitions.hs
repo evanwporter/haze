@@ -1,5 +1,6 @@
 module Transitions where
 
+import qualified Data.Text as T
 import Types
 import Wave
 
@@ -23,25 +24,47 @@ data WaveTick
   | VectorTick VectorState
   deriving (Eq, Show)
 
--- constructWaveTick :: WaveValue -> [WaveTick]
--- constructWaveTick (LogicValue V0) = Binary
--- constructWaveTick (LogicValue V1) = '‾'
--- constructWaveTick (LogicValue Vx) = 'x'
--- constructWaveTick (LogicValue Vz) = 'z'
--- constructWaveTick (LogicValue VX) = 'X'
--- constructWaveTick (LogicValue VZ) = 'Z'
--- constructWaveTick (BinaryValue _) = '='
--- constructWaveTick (RealValue _) = '~'
-
-buildWaveTicks :: [WaveValue] -> Int -> [WaveTick]
-buildWaveTicks [] _ = []
-buildWaveTicks (_ : []) _ = [] -- TODO: Thing about what exactly it should be
-buildWaveTicks (curr : next : rest) index =
+-- TODO: Eventually this will need to be able to a zoom parameters
+-- Which is essentially how wide each value should be. For now its hardcoded at 2
+sampleWaveform :: [WaveValue] -> Int -> [WaveTick]
+sampleWaveform [] _ = []
+-- Check if its a single value
+sampleWaveform [val] index =
+  case val of
+    LogicValue V0 -> [LogicTick LogicLow, LogicTick LogicLow]
+    LogicValue V1 -> [LogicTick LogicHigh, LogicTick LogicHigh]
+    LogicValue _ -> []
+    BinaryValue v ->
+      let tick1 =
+            if index < T.length v
+              then VectorTick (VectorStable (Just (T.index v index)))
+              else VectorTick (VectorStable Nothing)
+          tick2 =
+            if (index + 1) < T.length v
+              then VectorTick (VectorStable (Just (T.index v (index + 1))))
+              else VectorTick (VectorStable Nothing)
+       in [tick1, tick2]
+    _ -> []
+sampleWaveform (curr : next : rest) index =
   case (curr, next) of
-    (LogicValue V0, LogicValue V1) -> LogicTick LogicRising : LogicTick LogicHigh : buildWaveTicks rest 0
-    (LogicValue V1, LogicValue V0) -> LogicTick LogicFalling : LogicTick LogicFalling : buildWaveTicks rest 0
-    (LogicValue V0, LogicValue V0) -> LogicTick LogicLow : LogicTick LogicLow : buildWaveTicks rest 0
-    (LogicValue V1, LogicValue V1) -> LogicTick LogicHigh : LogicTick LogicHigh : buildWaveTicks rest 0
+    (LogicValue V0, LogicValue V1) -> LogicTick LogicRising : LogicTick LogicHigh : sampleWaveform (next : rest) 0
+    (LogicValue V1, LogicValue V0) -> LogicTick LogicFalling : LogicTick LogicLow : sampleWaveform (next : rest) 0
+    (LogicValue V0, LogicValue V0) -> LogicTick LogicLow : LogicTick LogicLow : sampleWaveform (next : rest) 0
+    (LogicValue V1, LogicValue V1) -> LogicTick LogicHigh : LogicTick LogicHigh : sampleWaveform (next : rest) 0
     (BinaryValue v1, BinaryValue v2)
-      | v1 == v2 -> []
+      -- the binary values equal each other in which case we want to return the vector stable
+      -- with the index and index + 1th character
+      | v1 == v2 && (T.length v1) >= (index + 2) ->
+          VectorTick (VectorStable (Just (T.index v1 index)))
+            : VectorTick (VectorStable (Just (T.index v1 (index + 1))))
+            : sampleWaveform (next : rest) (index + 2)
+      | v1 == v2 && (T.length v1 == index + 1) ->
+          VectorTick (VectorStable (Just (T.index v1 index)))
+            : VectorTick (VectorStable (Nothing))
+            : sampleWaveform (next : rest) (index + 2)
+      | v1 == v2 -> -- (T.length v1 <= index)
+          VectorTick (VectorStable (Nothing))
+            : VectorTick (VectorStable (Nothing))
+            : sampleWaveform (next : rest) (index + 1)
       | otherwise -> []
+    _ -> []

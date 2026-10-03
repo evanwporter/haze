@@ -52,13 +52,10 @@ buildNormalizedWaveStrings ::
   Int ->
   ValueChangeDumpDefinitions ->
   Either String [(IdentifierCode, String)]
-buildNormalizedWaveStrings start stop step vcd = do
-  waveform <- buildWaveform (simulations vcd)
-
-  let waveStrings =
-        buildWaveString start stop step waveform
-
-  return $ sortOn fst $ HM.toList waveStrings
+buildNormalizedWaveStrings start stop step vcd =
+  let waveform = buildWaveform (simulations vcd)
+      waveStrings = buildWaveString start stop step waveform
+  in Right $ sortOn fst $ HM.toList waveStrings
 
 goldenBuildWaveformTest :: TestTree
 goldenBuildWaveformTest =
@@ -69,14 +66,14 @@ goldenBuildWaveformTest =
       . BL.pack
       . TL.unpack
       . PS.pShowNoColor
-      . fmap normalizeWaveform
+      . normalizeWaveform
     $ buildWaveform sampleSimulations
 
 buildNormalizedWaveform ::
   ValueChangeDumpDefinitions ->
   Either String [(IdentifierCode, [(SimulationTime, WaveValue)])]
 buildNormalizedWaveform vcd =
-  fmap normalizeWaveform $
+  Right . normalizeWaveform $
     buildWaveform (simulations vcd)
 
 normalizeWaveform ::
