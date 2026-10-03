@@ -36,14 +36,14 @@ resample start stop changes =
       -- take the second element of the tuple returned by last
       snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
-resampleWaveform :: Waveform -> Wave
+resampleWaveform :: WaveValueMap -> Wave
 resampleWaveform waveform =
   let SimulationTime start = minimumTime waveform
       SimulationTime stop = maximumTime waveform
-   in -- Maps the resample function to every single value in the Waveform
+   in -- Maps the resample function to every single value in the WaveValueMap
       HM.map (resample start stop) waveform
 
-minimumTime :: Waveform -> SimulationTime
+minimumTime :: WaveValueMap -> SimulationTime
 minimumTime wf =
   -- intermediate map
   -- a map of identifier code to minimum SimulationTime
@@ -56,5 +56,5 @@ minimumTime wf =
   -- 4) obtain the first element from the resulting tuple
   fst $ minimumBy (comparing fst) (concat (HM.elems wf))
 
-maximumTime :: Waveform -> SimulationTime
+maximumTime :: WaveValueMap -> SimulationTime
 maximumTime wf = fst $ maximumBy (comparing fst) (concat (HM.elems wf))

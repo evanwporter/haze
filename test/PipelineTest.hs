@@ -11,6 +11,7 @@ import qualified Data.Text.IO as TIO
 import qualified Data.Text.Lazy as TL
 import Parser
 import Render
+import Resample (resampleWaveform)
 import Test.Tasty
 import Test.Tasty.Golden
 import qualified Text.Pretty.Simple as PS
@@ -22,8 +23,8 @@ pipelineTests :: TestTree
 pipelineTests =
   testGroup
     "Pipeline Tests"
-    [ goldenPipelineTest "test/vcd/logic.vcd" "test/golden/logic/"
-    , goldenPipelineTest "test/vcd/wikipedia.vcd" "test/golden/wikipedia/"
+    [ goldenPipelineTest "test/vcd/logic.vcd" "test/golden/logic/",
+      goldenPipelineTest "test/vcd/wikipedia.vcd" "test/golden/wikipedia/"
     ]
 
 -- End-to-end pipeline test: VCD → Parse → Waveform → Resample → Ticks → Render

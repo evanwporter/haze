@@ -1,16 +1,14 @@
 module Haze where
 
+import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Parser (parseText)
 import Resample (maximumTime, minimumTime)
 import Types
-import Waveform (Waveform, buildWaveform)
-
--- main = do
---   contents <- TIO.readFile "file.txt"
+import Waveform (WaveValueMap, buildWaveform)
 
 data WaveConstruct = WaveConstruct
-  { wWaveform :: Waveform,
+  { wWaveform :: WaveValueMap,
     wMin :: SimulationTime,
     wMax :: SimulationTime
   }
@@ -30,3 +28,6 @@ parseVCDFile path = do
   let maxTime = maximumTime <$> waveform
 
   return $ WaveConstruct <$> waveform <*> minTime <*> maxTime
+
+-- buildWaveConstruct :: T.Text -> Either String WaveConstruct
+-- buildWaveConstruct input =

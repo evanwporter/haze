@@ -9,6 +9,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Parser
 import Render
+import Resample (resampleWaveform)
 import System.Environment (getArgs)
 import System.IO (hIsTerminalDevice, stdout)
 import Transitions

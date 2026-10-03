@@ -60,7 +60,7 @@ buildNormalizedWaveform vcd =
     buildWaveform (simulations vcd)
 
 normalizeWaveform ::
-  Waveform ->
+  WaveValueMap ->
   [(IdentifierCode, [(SimulationTime, WaveValue)])]
 normalizeWaveform =
   sortOn fst . HM.toList
