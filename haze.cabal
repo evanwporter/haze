@@ -96,9 +96,9 @@ test-suite haze-test
     main-is:          Test.hs
     hs-source-dirs:   test
     other-modules:    ParserTest
-                    , WaveformTest
-                    , TestUtil
+                    , PipelineTest
                     , TransitionsTest
+                    , TestUtil
     build-depends:    base ^>=4.20.2.0
                     , haze
                     , tasty

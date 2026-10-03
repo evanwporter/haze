@@ -49,7 +49,7 @@ displaySignal :: Bool -> (IdentifierCode, [WaveValue]) -> IO ()
 displaySignal useColors (ident, values) = do
   let IdentifierCode code = ident
   let ticks = sampleWaveform values 0
-  let rendered = renderWaveTicksColored defaultColors ticks
+  let rendered = renderWaveTicks defaultColors ticks
 
   putStrLn $ T.unpack code ++ ": " ++ rendered
   putStrLn ""

@@ -1,0 +1,97 @@
+[
+    ( IdentifierCode "!"
+    ,
+        [
+            ( SimulationTime 50
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 45
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 40
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 35
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 30
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 25
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 20
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 15
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 10
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 5
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ]
+    )
+,
+    ( IdentifierCode """
+    ,
+        [
+            ( SimulationTime 10
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V1
+            )
+        ]
+    )
+,
+    ( IdentifierCode "#"
+    ,
+        [
+            ( SimulationTime 45
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 15
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue V0
+            )
+        ]
+    )
+,
+    ( IdentifierCode "$"
+    ,
+        [
+            ( SimulationTime 30
+            , LogicValue V1
+            )
+        ,
+            ( SimulationTime 20
+            , LogicValue V0
+            )
+        ,
+            ( SimulationTime 0
+            , LogicValue Vx
+            )
+        ]
+    )
+]

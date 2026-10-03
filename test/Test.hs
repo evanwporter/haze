@@ -3,9 +3,9 @@
 module Main (main) where
 
 import ParserTest
+import PipelineTest
 import Test.Tasty
 import TransitionsTest
-import WaveformTest
 
 main :: IO ()
 main = defaultMain tests
@@ -15,7 +15,7 @@ tests =
   testGroup
     "All Tests"
     [ parserTests,
-      waveformTests,
-      transitionsTests
+      transitionsTests,
+      pipelineTests
     ]
 

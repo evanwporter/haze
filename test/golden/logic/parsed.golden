@@ -1,0 +1,161 @@
+ValueChangeDumpDefinitions
+    { declarations =
+        [ Date
+            ( DateText "September 30, 2026 " )
+        , Version
+            ( VersionText "Haze Test Generator 1.0 " )
+        , TimeScale T1 NanoSeconds
+        , Scope Module
+            ( ScopeIdentifier "top" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "!" )
+            ( Identifier "clk" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode """ )
+            ( Identifier "reset" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "#" )
+            ( Identifier "enable" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "$" )
+            ( Identifier "data" )
+        , Upscope
+        , EndDefinitions
+        ]
+    , simulations =
+        [ SimTime
+            ( SimulationTime 0 )
+        , DumpVars
+            [ ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            , ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode """ )
+                )
+            , ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "#" )
+                )
+            , ScalarChange
+                ( ScalarValueChange Vx
+                    ( IdentifierCode "$" )
+                )
+            ]
+        , SimTime
+            ( SimulationTime 5 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 10 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode """ )
+                )
+            )
+        , SimTime
+            ( SimulationTime 15 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "#" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 20 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "$" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 25 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 30 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "$" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 35 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 40 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 45 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "!" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "#" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 50 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "!" )
+                )
+            )
+        ]
+    }

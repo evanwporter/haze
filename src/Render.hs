@@ -58,7 +58,7 @@ renderColored (ColoredChar fg bg char) =
     ]
     ++ char
 
-renderWaveTicksColored :: WaveColors -> [WaveTick] -> String
-renderWaveTicksColored colors ticks =
+renderWaveTicks :: WaveColors -> [WaveTick] -> String
+renderWaveTicks colors ticks =
   concatMap (renderColored . tickToColored colors) ticks
     ++ ANSI.setSGRCode [ANSI.Reset]

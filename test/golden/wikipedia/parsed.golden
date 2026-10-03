@@ -1,0 +1,154 @@
+ValueChangeDumpDefinitions
+    { declarations =
+        [ Date
+            ( DateText "Date text. For example: November 11, 2009.
+            " )
+        , Version
+            ( VersionText "VCD generator tool version info text.
+            " )
+        , Comment
+            ( CommentText "Any comment text.
+            " )
+        , TimeScale T1 PicoSeconds
+        , Scope Module
+            ( ScopeIdentifier "logic" )
+        , Var Wire
+            ( Size 8 )
+            ( IdentifierCode "#" )
+            ( Identifier "data" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "$" )
+            ( Identifier "data_valid" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "%" )
+            ( Identifier "en" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "&" )
+            ( Identifier "rx_en" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "'" )
+            ( Identifier "tx_en" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode "(" )
+            ( Identifier "empty" )
+        , Var Wire
+            ( Size 1 )
+            ( IdentifierCode ")" )
+            ( Identifier "underrun" )
+        , Upscope
+        , EndDefinitions
+        ]
+    , simulations =
+        [ DumpVars
+            [ VectorChange
+                ( BinaryLower "xxxxxxxx"
+                    ( IdentifierCode "#" )
+                )
+            , ScalarChange
+                ( ScalarValueChange Vx
+                    ( IdentifierCode "$" )
+                )
+            , ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "%" )
+                )
+            , ScalarChange
+                ( ScalarValueChange Vx
+                    ( IdentifierCode "&" )
+                )
+            , ScalarChange
+                ( ScalarValueChange Vx
+                    ( IdentifierCode "'" )
+                )
+            , ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "(" )
+                )
+            , ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode ")" )
+                )
+            ]
+        , SimTime
+            ( SimulationTime 0 )
+        , SimValueChange
+            ( VectorChange
+                ( BinaryLower "10000001"
+                    ( IdentifierCode "#" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "$" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "%" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "&" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "'" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "(" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode ")" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 2211 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "'" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 2296 )
+        , SimValueChange
+            ( VectorChange
+                ( BinaryLower "0"
+                    ( IdentifierCode "#" )
+                )
+            )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V1
+                    ( IdentifierCode "$" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 2302 )
+        , SimValueChange
+            ( ScalarChange
+                ( ScalarValueChange V0
+                    ( IdentifierCode "$" )
+                )
+            )
+        , SimTime
+            ( SimulationTime 2303 )
+        ]
+    }
