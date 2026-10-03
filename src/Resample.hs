@@ -6,6 +6,8 @@ import Data.Ord (comparing)
 import Types
 import Waveform
 
+type Wave = HM.HashMap IdentifierCode [WaveValue]
+
 -- AI Generated; figure out what it does
 -- resample :: Int -> Int -> Int -> [(Int, WaveValue)] -> [WaveValue]
 -- resample start stop 1 changes =
@@ -34,7 +36,7 @@ resample start stop changes =
       -- take the second element of the tuple returned by last
       snd $ last $ takeWhile (\((SimulationTime time), _) -> time <= t) orderedChanges
 
-resampleWaveform :: Waveform -> HM.HashMap IdentifierCode [WaveValue]
+resampleWaveform :: Waveform -> Wave
 resampleWaveform waveform =
   let SimulationTime start = minimumTime waveform
       SimulationTime stop = maximumTime waveform

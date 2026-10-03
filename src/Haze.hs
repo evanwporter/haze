@@ -2,26 +2,31 @@ module Haze where
 
 import qualified Data.Text.IO as TIO
 import Parser (parseText)
+import Resample (maximumTime, minimumTime)
 import Types
 import Waveform (Waveform, buildWaveform)
 
 -- main = do
 --   contents <- TIO.readFile "file.txt"
 
-parseVCDFile :: FilePath -> IO (Either String ValueChangeDumpDefinitions)
-parseVCDFile path = do
-  content <- TIO.readFile path
-  return $ parseText content
+data WaveConstruct = WaveConstruct
+  { wWaveform :: Waveform,
+    wMin :: SimulationTime,
+    wMax :: SimulationTime
+  }
 
-haze :: FilePath -> IO (Either String Waveform)
-haze path = do
+parseVCDFile :: FilePath -> IO (Either String WaveConstruct)
+parseVCDFile path = do
   -- do unwraps the IO monad but we still need to handle
   -- the Either monad
-  definitions <- parseVCDFile path
+  definitions <- parseText <$> TIO.readFile path
 
   -- (buildWaveform . simulations) is a function that accepts
   -- ValueChangeDumpDefinitions
-  -- <$> unwraps definitions so it can operate underneath it
-  return $ (buildWaveform . simulations) <$> definitions
+  -- <$> unwraps the either monad so it can operate underneath it
+  let waveform = (buildWaveform . simulations) <$> definitions
 
--- contents is Data.Text.Text
+  let minTime = minimumTime <$> waveform
+  let maxTime = maximumTime <$> waveform
+
+  return $ WaveConstruct <$> waveform <*> minTime <*> maxTime

@@ -1,10 +1,14 @@
 module Transitions where
 
+import qualified Data.HashMap.Lazy as HM
 import qualified Data.Text as T
+import Resample
 import Types
 import Waveform
 
--- TODO: Implement null state
+-- TODO: Implement null state (ie: x and X)
+
+type WaveTickMap = HM.HashMap IdentifierCode [WaveTick]
 
 data LogicState
   = LogicHigh
@@ -72,3 +76,8 @@ sampleWaveform (curr : next : rest) index =
             : sampleWaveform (next : rest) (0)
       | otherwise -> []
     _ -> []
+
+sampleWaveforms :: Wave -> WaveTickMap
+-- flip revesers the arguments so that I can pass the index first
+-- and the waves map second
+sampleWaveforms waves = HM.map (flip sampleWaveform 0) waves

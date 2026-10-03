@@ -1,8 +1,12 @@
 module Render where
 
+import qualified Data.HashMap.Lazy as HM
 import Data.Maybe (fromMaybe)
 import qualified System.Console.ANSI as ANSI
 import Transitions
+import Types
+
+type RenderMap = HM.HashMap IdentifierCode String
 
 -- | Color scheme for waveforms
 data WaveColors = WaveColors
@@ -109,3 +113,7 @@ renderWaveTicks :: WaveColors -> [WaveTick] -> String
 renderWaveTicks colors ticks =
   concatMap (renderColored . tickToColored colors) ticks
     ++ ANSI.setSGRCode [ANSI.Reset]
+
+render :: WaveTickMap -> RenderMap
+render tickMap =
+  HM.map (renderWaveTicks defaultColors) tickMap

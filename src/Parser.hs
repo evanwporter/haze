@@ -4,7 +4,6 @@
 module Parser where
 
 import Control.Applicative
-import Data.Attoparsec (endOfInput)
 import qualified Data.Attoparsec.Combinator as A
 import qualified Data.Attoparsec.Text as A
 import Data.Char (isSpace)
