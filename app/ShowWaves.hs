@@ -42,14 +42,28 @@ main = do
       putStrLn $ "Sample counts: " ++ show sampleCounts
       putStrLn ""
 
-      -- Display each signal
-      mapM_ (displaySignal isTerm) signals
+      -- Calculate tick width (based on first signal's tick count)
+      let tickWidth = case signals of
+            [] -> 0
+            ((_, vals) : _) -> length (sampleWaveform vals 0)
 
-displaySignal :: Bool -> (IdentifierCode, [WaveValue]) -> IO ()
-displaySignal useColors (ident, values) = do
+      -- Display each signal with tick marks
+      mapM_ (displaySignalWithTicks isTerm tickWidth) (zip [1 ..] signals)
+
+displaySignalWithTicks :: Bool -> Int -> (Int, (IdentifierCode, [WaveValue])) -> IO ()
+displaySignalWithTicks useColors tickWidth (idx, (ident, values)) = do
   let IdentifierCode code = ident
   let ticks = sampleWaveform values 0
   let rendered = renderWaveTicks defaultColors ticks
+  let label = T.unpack code ++ ": "
 
-  putStrLn $ T.unpack code ++ ": " ++ rendered
+  -- Print the waveform
+  putStrLn $ label ++ rendered
+
+  -- Print tick marks (every 10 ticks)
+  -- Use the actual tick count, not the width parameter
+  let actualTickCount = length ticks
+  let tickLine = concat [if i `mod` 10 == 0 then "┊" else "·" | i <- [0 .. actualTickCount - 1]]
+  -- Add 2 extra spaces to account for ANSI rendering offset
+  putStrLn $ replicate (length label - 2) ' ' ++ tickLine
   putStrLn ""
