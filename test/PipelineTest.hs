@@ -33,23 +33,23 @@ goldenPipelineTest vcdFile goldenPrefix =
     ("Pipeline: " ++ vcdFile)
     [ goldenVsString
         "parsed VCD"
-        (goldenPrefix ++ "parsed.golden")
+        (goldenPrefix ++ "1-parsed.golden")
         $ parsedVCD vcdFile,
       goldenVsString
         "built waveform"
-        (goldenPrefix ++ "waveform.golden")
+        (goldenPrefix ++ "2-waveform.golden")
         $ builtWaveform vcdFile,
       goldenVsString
         "resampled waveform"
-        (goldenPrefix ++ "resampled.golden")
+        (goldenPrefix ++ "3-resampled.golden")
         $ resampledWaveform vcdFile,
       goldenVsString
         "generated ticks"
-        (goldenPrefix ++ "ticks.golden")
+        (goldenPrefix ++ "4-ticks.golden")
         $ generatedTicks vcdFile,
       goldenVsString
         "rendered output"
-        (goldenPrefix ++ "rendered.golden")
+        (goldenPrefix ++ "5-rendered.golden")
         $ renderedOutput vcdFile
     ]
 
