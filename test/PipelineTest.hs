@@ -48,8 +48,12 @@ goldenPipelineTest vcdFile goldenPrefix =
         (goldenPrefix ++ "4-ticks.golden")
         $ generatedTicks vcdFile,
       goldenVsString
-        "rendered output"
-        (goldenPrefix ++ "5-rendered.golden")
+        "colored chars (pre-render)"
+        (goldenPrefix ++ "5-colored-chars.golden")
+        $ coloredChars vcdFile,
+      goldenVsString
+        "rendered output (plain)"
+        (goldenPrefix ++ "6-rendered.golden")
         $ renderedOutput vcdFile
     ]
 
@@ -96,6 +100,25 @@ generatedTicks vcdFile = do
             withTicks = map (\(ident, vals) -> (ident, sampleWaveform vals 0)) (HM.toList resampled)
             normalized = sortOn fst withTicks
          in TL.unpack $ PS.pShowNoColor normalized
+
+coloredChars :: FilePath -> IO BL.ByteString
+coloredChars vcdFile = do
+  text <- TIO.readFile vcdFile
+  pure . BL.pack $
+    case parseOnly parseVCD text of
+      Left err -> "Parse error: " ++ err
+      Right vcd ->
+        let waveform = buildWaveform (simulations vcd)
+            resampled = resampleWaveform waveform
+            signals = sortOn fst $ HM.toList resampled
+            withColoredChars = map toColoredChars signals
+            normalized = sortOn fst withColoredChars
+         in TL.unpack $ PS.pShowNoColor normalized
+  where
+    toColoredChars (ident, values) =
+      let ticks = sampleWaveform values 0
+          colored = map (tickToColored defaultColors) ticks
+       in (ident, colored)
 
 renderedOutput :: FilePath -> IO BL.ByteString
 renderedOutput vcdFile = do

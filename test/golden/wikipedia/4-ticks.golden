@@ -4615,12 +4615,12 @@
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
-        , VectorTick ( VectorStable Nothing )
+        , VectorTick VectorRight
+        , VectorTick VectorLeft
         , VectorTick
             ( VectorStable
                 ( Just '0' )
             )
-        , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
         , VectorTick ( VectorStable Nothing )
