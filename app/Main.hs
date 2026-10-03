@@ -20,44 +20,61 @@ data AppState = AppState
     { entries :: [Widget Name]
     }
 
-waveToWidget :: WaveSegmentData -> Widget n
-waveToWidget (WaveSegmentData (LogicValue value) dur) =
+columnsPerTick :: Int
+columnsPerTick = 2
+
+-- | Width of a segment
+segmentWidth :: Int -> Int
+segmentWidth dur = columnsPerTick * (max 0 dur)
+
+logicBase :: Value -> Int -> Widget n
+logicBase value width =
     case value of
-        V0 ->
-            (withAttr lowAttr $ txt "\xE0B8") -- 
-                <+> (withAttr lowAttr $ txt $ T.replicate (dur - 1) "▁▁")
-                <+> (withAttr lowAttr $ txt "▁\xE0BA") -- 
-        V1 ->
-            (withAttr highAttr $ txt $ T.replicate (dur - 1) "  ")
-                <+> (withAttr highAttr $ txt " ")
-        _ -> withAttr highAttr $ txt $ T.replicate dur " "
-waveToWidget (WaveSegmentData (BinaryValue text) dur) =
-    let textLength = T.length text
-        paddingLength =
-            max
-                0
-                -- (dur - 1) accounts for the  and  on both sides
-                --    (together they make up 1 tick over two columns)
-                -- the * 2 accounts for the fact that a single tick
-                -- takes up 2 columns
-                ( ((dur - 1) * 2)
-                    - textLength
-                )
-        content = text <> T.replicate paddingLength " "
+        V0 -> withAttr lowAttr $ txt $ T.replicate width "▁"
+        V1 -> withAttr highAttr $ txt $ T.replicate width " "
+        _ -> withAttr highAttr $ txt $ T.replicate width " "
+
+waveToWidget :: WaveSegmentData -> Maybe WaveSegmentData -> Widget n
+waveToWidget (WaveSegmentData (LogicValue value) dur) next =
+    case (value, next) of
+        -- V0 -> V1
+        (V0, Just (WaveSegmentData (LogicValue V1) _)) ->
+            logicBase V0 (max 0 (width - 1)) -- -1 to account for 
+                <+> withAttr lowAttr (txt "\xE0BA") -- 
+
+        -- V1 -> V0
+        (V1, Just (WaveSegmentData (LogicValue V0) _)) ->
+            logicBase V1 (max 0 (width - 1)) -- -1 to account for 
+                <+> withAttr lowAttr (txt "\xE0B8") -- 
+
+        -- V1 -> V1 or V0 -> V0
+        _ -> logicBase value width
+  where
+    width = segmentWidth dur
+waveToWidget (WaveSegmentData (BinaryValue text) dur) _ =
+    let width = segmentWidth dur
+        contentWidth = max 0 (width - 2)
+        content = T.take contentWidth text
+        paddingLength = contentWidth - T.length content
      in (withAttr lowAttr $ txt "\xE0B2") -- 
-            <+> (withAttr vectorCharAttr $ txt content)
+            <+> (withAttr vectorCharAttr $ txt (content <> T.replicate paddingLength " "))
             <+> (withAttr lowAttr $ txt "\xE0B0") -- 
-waveToWidget (WaveSegmentData (RealValue number) dur) =
-    withAttr vectorCharAttr $
-        txt $
-            T.take dur (T.pack (show number))
+waveToWidget (WaveSegmentData (RealValue number) dur) _ =
+    let width = segmentWidth dur
+        content = T.take width (T.pack (show number))
+     in withAttr vectorCharAttr $
+            txt $
+                -- <> is used for combining two T.Text objects
+                content <> T.replicate (width - T.length content) " "
 
 waveSegmentsToWidget :: [WaveSegmentData] -> Widget n
 waveSegmentsToWidget [] = emptyWidget
-waveSegmentsToWidget [segment] = waveToWidget segment
-waveSegmentsToWidget (current : rest) =
-    waveToWidget current
-        <+> waveSegmentsToWidget rest
+waveSegmentsToWidget (segment : rest) =
+    waveToWidget segment next <+> waveSegmentsToWidget rest
+  where
+    next = case rest of
+        [] -> Nothing
+        nextSegment : _ -> Just nextSegment
 
 -- Set the rows that will be displayed
 setEntries :: [Widget Name] -> AppState -> AppState
