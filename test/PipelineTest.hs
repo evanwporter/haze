@@ -73,7 +73,7 @@ builtWaveform vcdFile = do
     case parseOnly parseVCD text of
       Left err -> "Parse error: " ++ err
       Right vcd ->
-        let waveform = buildWaveform (simulations vcd)
+        let waveform = buildWaveValueMap (simulations vcd)
             normalized = sortOn fst $ HM.toList waveform
          in TL.unpack $ PS.pShowNoColor normalized
 
@@ -84,7 +84,7 @@ resampledWaveform vcdFile = do
     case parseOnly parseVCD text of
       Left err -> "Parse error: " ++ err
       Right vcd ->
-        let waveform = buildWaveform (simulations vcd)
+        let waveform = buildWaveValueMap (simulations vcd)
             resampled = resampleWaveform waveform
             normalized = sortOn fst $ HM.toList resampled
          in TL.unpack $ PS.pShowNoColor normalized
@@ -96,9 +96,9 @@ generatedTicks vcdFile = do
     case parseOnly parseVCD text of
       Left err -> "Parse error: " ++ err
       Right vcd ->
-        let waveform = buildWaveform (simulations vcd)
+        let waveform = buildWaveValueMap (simulations vcd)
             resampled = resampleWaveform waveform
-            withTicks = map (\(ident, vals) -> (ident, sampleWaveform vals 0)) (HM.toList resampled)
+            withTicks = map (\(ident, vals) -> (ident, toRenderTicks vals 0)) (HM.toList resampled)
             normalized = sortOn fst withTicks
          in TL.unpack $ PS.pShowNoColor normalized
 
@@ -109,7 +109,7 @@ coloredChars vcdFile = do
     case parseOnly parseVCD text of
       Left err -> "Parse error: " ++ err
       Right vcd ->
-        let waveform = buildWaveform (simulations vcd)
+        let waveform = buildWaveValueMap (simulations vcd)
             resampled = resampleWaveform waveform
             signals = sortOn fst $ HM.toList resampled
             withColoredChars = map toColoredChars signals
@@ -117,7 +117,7 @@ coloredChars vcdFile = do
          in TL.unpack $ PS.pShowNoColor normalized
   where
     toColoredChars (ident, values) =
-      let ticks = sampleWaveform values 0
+      let ticks = toRenderTicks values 0
           colored = map (tickToColored defaultColors) ticks
        in (ident, colored)
 
@@ -128,12 +128,12 @@ renderedOutput vcdFile = do
     case parseOnly parseVCD text of
       Left err -> "Parse error: " ++ err
       Right vcd ->
-        let waveform = buildWaveform (simulations vcd)
+        let waveform = buildWaveValueMap (simulations vcd)
             resampled = resampleWaveform waveform
             signals = sortOn fst $ HM.toList resampled
             rendered = map renderSignal signals
          in unlines rendered
   where
     renderSignal (IdentifierCode code, values) =
-      let ticks = sampleWaveform values 0
+      let ticks = toRenderTicks values 0
        in T.unpack code ++ ": " ++ renderWaveTicks defaultColors ticks

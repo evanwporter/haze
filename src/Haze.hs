@@ -1,11 +1,10 @@
 module Haze where
 
-import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Parser (parseText)
 import Resample (maximumTime, minimumTime)
 import Types
-import Waveform (WaveValueMap, buildWaveform)
+import Waveform (WaveValueMap, buildWaveValueMap)
 
 data WaveConstruct = WaveConstruct
   { wWaveform :: WaveValueMap,
@@ -19,10 +18,10 @@ parseVCDFile path = do
   -- the Either monad
   definitions <- parseText <$> TIO.readFile path
 
-  -- (buildWaveform . simulations) is a function that accepts
+  -- (buildWaveValueMap . simulations) is a function that accepts
   -- ValueChangeDumpDefinitions
   -- <$> unwraps the either monad so it can operate underneath it
-  let waveform = (buildWaveform . simulations) <$> definitions
+  let waveform = (buildWaveValueMap . simulations) <$> definitions
 
   let minTime = minimumTime <$> waveform
   let maxTime = maximumTime <$> waveform

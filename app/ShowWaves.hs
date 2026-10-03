@@ -31,7 +31,7 @@ main = do
   case parseOnly parseVCD text of
     Left err -> putStrLn $ "Parse error: " ++ err
     Right vcd -> do
-      let wf = buildWaveform (simulations vcd)
+      let wf = buildWaveValueMap (simulations vcd)
       let resampled = resampleWaveform wf
       let signals = sortOn fst $ HM.toList resampled
 
@@ -46,7 +46,7 @@ main = do
       -- Calculate tick width (based on first signal's tick count)
       let tickWidth = case signals of
             [] -> 0
-            ((_, vals) : _) -> length (sampleWaveform vals 0)
+            ((_, vals) : _) -> length (toRenderTicks vals 0)
 
       -- Display each signal with tick marks
       mapM_ (displaySignalWithTicks isTerm tickWidth) (zip [1 ..] signals)
@@ -54,7 +54,7 @@ main = do
 displaySignalWithTicks :: Bool -> Int -> (Int, (IdentifierCode, [WaveValue])) -> IO ()
 displaySignalWithTicks useColors tickWidth (idx, (ident, values)) = do
   let IdentifierCode code = ident
-  let ticks = sampleWaveform values 0
+  let ticks = toRenderTicks values 0
   let rendered = renderWaveTicks defaultColors ticks
   let label = T.unpack code ++ ": "
 

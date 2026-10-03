@@ -22,6 +22,7 @@ type Wave = HM.HashMap IdentifierCode [WaveValue]
 --             _ -> v : go ts ((tc, v) : rest)
 
 -- TODO: This is terribly inefficient
+-- Converts a sparse list of (SimulationTime, WaveValue) pairs into a dense list of [WaveValue]
 resample :: Int -> Int -> [(SimulationTime, WaveValue)] -> [WaveValue]
 resample start stop changes =
   -- map means call sample on every one of these elements

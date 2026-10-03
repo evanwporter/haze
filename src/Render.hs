@@ -58,7 +58,7 @@ charColors :: WaveColors -> ColorSpec
 charColors colors = (ANSI.Dull, charColor colors)
 
 -- | Convert tick to colored character with powerline blending
-tickToColored :: WaveColors -> WaveTick -> ColoredChar
+tickToColored :: WaveColors -> RenderTick -> ColoredChar
 tickToColored colors (LogicTick state) = case state of
   LogicHigh ->
     ColoredChar
@@ -109,11 +109,11 @@ renderColored (ColoredChar fg bg char) =
     ]
     ++ [char]
 
-renderWaveTicks :: WaveColors -> [WaveTick] -> String
+renderWaveTicks :: WaveColors -> [RenderTick] -> String
 renderWaveTicks colors ticks =
   concatMap (renderColored . tickToColored colors) ticks
     ++ ANSI.setSGRCode [ANSI.Reset]
 
-render :: WaveTickMap -> RenderMap
+render :: RenderTickMap -> RenderMap
 render tickMap =
   HM.map (renderWaveTicks defaultColors) tickMap

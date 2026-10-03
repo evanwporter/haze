@@ -21,13 +21,13 @@ logicTransitionTests =
   testGroup
     "Logic Value Transitions"
     [ testCase "low to high transition" $
-        sampleWaveform [LogicValue V0, LogicValue V1] 0
+        toRenderTicks [LogicValue V0, LogicValue V1] 0
           @?= [LogicTick LogicRising, LogicTick LogicHigh, LogicTick LogicHigh, LogicTick LogicHigh],
       testCase "high to low transition" $
-        sampleWaveform [LogicValue V1, LogicValue V0] 0
+        toRenderTicks [LogicValue V1, LogicValue V0] 0
           @?= [LogicTick LogicFalling, LogicTick LogicLow, LogicTick LogicLow, LogicTick LogicLow],
       testCase "stable low" $
-        sampleWaveform [LogicValue V0, LogicValue V0, LogicValue V0] 0
+        toRenderTicks [LogicValue V0, LogicValue V0, LogicValue V0] 0
           @?= [ LogicTick LogicLow,
                 LogicTick LogicLow,
                 LogicTick LogicLow,
@@ -36,7 +36,7 @@ logicTransitionTests =
                 LogicTick LogicLow
               ],
       testCase "stable high" $
-        sampleWaveform [LogicValue V1, LogicValue V1, LogicValue V1] 0
+        toRenderTicks [LogicValue V1, LogicValue V1, LogicValue V1] 0
           @?= [ LogicTick LogicHigh,
                 LogicTick LogicHigh,
                 LogicTick LogicHigh,
@@ -45,7 +45,7 @@ logicTransitionTests =
                 LogicTick LogicHigh
               ],
       testCase "multiple transitions" $
-        sampleWaveform [LogicValue V0, LogicValue V1, LogicValue V1, LogicValue V0] 0
+        toRenderTicks [LogicValue V0, LogicValue V1, LogicValue V1, LogicValue V0] 0
           @?= [ LogicTick LogicRising,
                 LogicTick LogicHigh,
                 LogicTick LogicHigh,
@@ -62,7 +62,7 @@ binaryValueTests =
   testGroup
     "Binary Value Transitions"
     [ testCase "stable binary value ABC" $
-        sampleWaveform [BinaryValue "ABC", BinaryValue "ABC", BinaryValue "ABC"] 0
+        toRenderTicks [BinaryValue "ABC", BinaryValue "ABC", BinaryValue "ABC"] 0
           @?= [ VectorTick (VectorStable (Just 'A')),
                 VectorTick (VectorStable (Just 'B')),
                 VectorTick (VectorStable (Just 'C')),
@@ -71,14 +71,14 @@ binaryValueTests =
                 VectorTick (VectorStable Nothing)
               ],
       testCase "stable single character" $
-        sampleWaveform [BinaryValue "X", BinaryValue "X"] 0
+        toRenderTicks [BinaryValue "X", BinaryValue "X"] 0
           @?= [ VectorTick (VectorStable (Just 'X')),
                 VectorTick (VectorStable Nothing),
                 VectorTick (VectorStable Nothing),
                 VectorTick (VectorStable Nothing)
               ],
       testCase "stable short value runs out" $
-        sampleWaveform [BinaryValue "AB", BinaryValue "AB", BinaryValue "AB", BinaryValue "AB"] 0
+        toRenderTicks [BinaryValue "AB", BinaryValue "AB", BinaryValue "AB", BinaryValue "AB"] 0
           @?= [ VectorTick (VectorStable (Just 'A')),
                 VectorTick (VectorStable (Just 'B')),
                 VectorTick (VectorStable Nothing),
@@ -89,7 +89,7 @@ binaryValueTests =
                 VectorTick (VectorStable Nothing)
               ],
       testCase "empty binary value" $
-        sampleWaveform [BinaryValue "", BinaryValue ""] 0
+        toRenderTicks [BinaryValue "", BinaryValue ""] 0
           @?= [ VectorTick (VectorStable Nothing),
                 VectorTick (VectorStable Nothing),
                 VectorTick (VectorStable Nothing),

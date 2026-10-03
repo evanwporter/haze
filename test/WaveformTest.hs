@@ -50,14 +50,14 @@ goldenBuildWaveformTest =
       . TL.unpack
       . PS.pShowNoColor
       . normalizeWaveform
-    $ buildWaveform sampleSimulations
+    $ buildWaveValueMap sampleSimulations
 
 buildNormalizedWaveform ::
   ValueChangeDumpDefinitions ->
   Either String [(IdentifierCode, [(SimulationTime, WaveValue)])]
 buildNormalizedWaveform vcd =
   Right . normalizeWaveform $
-    buildWaveform (simulations vcd)
+    buildWaveValueMap (simulations vcd)
 
 normalizeWaveform ::
   WaveValueMap ->

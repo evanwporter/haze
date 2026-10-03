@@ -74,7 +74,7 @@ parseSims time (sim : sims) wave =
   let (newTime, newWave) = parseSim time sim wave
    in parseSims newTime sims newWave
 
-buildWaveform :: [SimulationCommand] -> WaveValueMap
-buildWaveform sims =
+buildWaveValueMap :: [SimulationCommand] -> WaveValueMap
+buildWaveValueMap sims =
   let initalWave = HM.empty
    in parseSims (SimulationTime 0) sims initalWave

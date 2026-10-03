@@ -83,7 +83,7 @@ goldenFileParserTest parser name inputFile goldenFile =
 --
 -- goldenFileTransformTest
 --    parseVCD
---    (\vcd -> buildWaveform (simulations vcd))
+--    (\vcd -> buildWaveValueMap (simulations vcd))
 --    "builds sample waveform"
 --    "test/vcd/sample.vcd"
 --    "test/golden/sample-waveform.golden"
