@@ -3,8 +3,6 @@
 module TestUtil (
     goldenParserTest,
     goldenFileParserTest,
-    goldenFileTransformTest,
-    prettyGoldenTest,
 )
 where
 
@@ -71,71 +69,3 @@ goldenFileParserTest parser name inputFile goldenFile =
                 Right result ->
                     TL.unpack $
                         PS.pShowNoColor result
-
-{- | Golden test for a complete flow:
-
-file
- -> parser
- -> transformation
- -> golden output
-
-The transformation can return an error with Either String.
-
-Example:
-
-goldenFileTransformTest
-   parseVCD
-   (\vcd -> buildWaveValueMap (simulations vcd))
-   "builds sample waveform"
-   "test/vcd/sample.vcd"
-   "test/golden/sample-waveform.golden"
--}
-goldenFileTransformTest ::
-    (Show b) =>
-    Parser a ->
-    (a -> Either String b) ->
-    TestName ->
-    FilePath ->
-    FilePath ->
-    TestTree
-goldenFileTransformTest parser transform name inputFile goldenFile =
-    goldenVsString name goldenFile $ do
-        input <- TIO.readFile inputFile
-
-        pure . BL.pack $
-            case parseOnly parser input of
-                Left err ->
-                    "Parse error: " ++ err
-                Right parsed ->
-                    case transform parsed of
-                        Left err ->
-                            "Transform error: " ++ err
-                        Right result ->
-                            TL.unpack $
-                                PS.pShowNoColor result
-
-{- | Golden-test any Show-able value using pretty-simple.
-
-This is useful when the value has already been constructed and no parser
-needs to run as part of the test.
-
-Example:
-
-prettyGoldenTest
-   "normalized waveform"
-   "test/golden/waveform.golden"
-   waveform
--}
-prettyGoldenTest ::
-    (Show a) =>
-    TestName ->
-    FilePath ->
-    a ->
-    TestTree
-prettyGoldenTest name goldenFile value =
-    goldenVsString name goldenFile
-        $ pure
-            . BL.pack
-            . TL.unpack
-            . PS.pShowNoColor
-        $ value

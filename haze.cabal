@@ -66,6 +66,7 @@ library
                     , attoparsec
                     , text
                     , bytestring
+                    , pretty-simple
                     , unordered-containers
                     , hashable
                     , ansi-terminal
@@ -100,8 +101,6 @@ test-suite haze-test
     main-is:          Test.hs
     hs-source-dirs:   test
     other-modules:    ParserTest
-                    , PipelineTest
-                    , TransitionsTest
                     , TestUtil
     build-depends:    base ^>=4.20.2.0
                     , haze
@@ -114,3 +113,22 @@ test-suite haze-test
                     , pretty-simple
                     , unordered-containers
     default-language: Haskell2010
+
+-- test-suite haze-ui-test
+--     import:           warnings
+--     type:             exitcode-stdio-1.0
+--     main-is:          SignalListTest.hs
+--     hs-source-dirs:   test app
+--     other-modules:    Attributes
+--                     , SignalList
+--                     , Types
+--     build-depends:    base ^>=4.20.2.0
+--                     , haze
+--                     , brick
+--                     , vty
+--                     , tasty
+--                     , tasty-golden
+--                     , bytestring
+--                     , text
+--                     , unordered-containers
+--     default-language: Haskell2010

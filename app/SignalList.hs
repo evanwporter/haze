@@ -7,7 +7,6 @@ import Brick
 import Brick.Widgets.Border (vBorder)
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (mapMaybe)
-import Data.Monoid (Ap)
 import qualified Data.Text as T
 import Haze
 import Types
