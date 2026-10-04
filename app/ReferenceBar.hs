@@ -20,7 +20,7 @@ referenceBar state =
   where
     waveConstruct = stateWaveConstruct state
     identifierMap = wcSymbolMap waveConstruct
-    idents = identifiersDisplayed state
+    idents = stateDisplayedIdentifiers state
     references = mapMaybe (flip HM.lookup identifierMap) idents
     selectedIndex = stateSelectedIndex state
     selectedIdent = (idents !!) <$> selectedIndex

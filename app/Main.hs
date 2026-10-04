@@ -11,8 +11,8 @@ import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Haze
 import ReferenceBar
-import Selection (changeSelection)
-import SignalList (signalList)
+import Selection
+import SignalList
 import System.Environment (getArgs)
 import TimeBar
 import Types
@@ -75,15 +75,16 @@ initialState wave =
         { stateWaveConstruct = wave
         , stateCursor = wMin wave
         , -- TODO: Don't display all wavemaps to start
-          identifiersDisplayed = wcIdentifierCodes wave
+          stateDisplayedIdentifiers = wcIdentifierCodes wave
         , stateSelectedIndex = Just 0
+        , stateSelectedSignal = 0
         }
 
 -- TODO: Figure out what this does
 waveEntries :: AppState -> WaveConstruct -> [Widget Name]
 waveEntries state waveConstruct =
     [ waveSegmentsToWidget (constructWaveSegments maxTime values)
-    | ident <- identifiersDisplayed state
+    | ident <- stateDisplayedIdentifiers state
     , Just values <- [HM.lookup ident (wWaveform waveConstruct)]
     , let maxTime = wMax waveConstruct
     ]
@@ -151,9 +152,17 @@ app =
             -- move down 1 selection
             VtyEvent (V.EvKey (V.KChar 'j') []) ->
                 modify (changeSelection 1)
-            -- move up 1 selection
+            -- move up 1 selection in waveform display
             VtyEvent (V.EvKey (V.KChar 'k') []) ->
                 modify (changeSelection (-1))
+            VtyEvent (V.EvKey V.KDown []) ->
+                modify (changeSelectedSignal (1))
+            VtyEvent (V.EvKey V.KUp []) ->
+                modify (changeSelectedSignal (-1))
+            VtyEvent (V.EvKey (V.KChar 'd') []) ->
+                modify removeSignal
+            VtyEvent (V.EvKey V.KEnter []) ->
+                modify addSignal
             _ -> return ()
         , appStartEvent = return ()
         , appAttrMap = const waveAttrMap

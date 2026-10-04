@@ -20,7 +20,7 @@ cursorLayer state =
     -- screen position.
     cursorX = t * columnsPerTick + waveformDisplayXOffset + 3
 
-    height = ((length $ identifiersDisplayed state) * 2) - 1
+    height = ((length $ stateDisplayedIdentifiers state) * 2) - 1
 
 moveCursor :: Int -> AppState -> AppState
 moveCursor amount state =

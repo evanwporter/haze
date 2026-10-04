@@ -10,13 +10,13 @@ import Haze
 import Types
 
 {- | Values for each displayed identifier/wave according to where the cursor
-is. The returned list is in the same order as the identifiersDisplayed.
+is. The returned list is in the same order as the stateDisplayedIdentifiers.
 -}
 collectValues :: AppState -> [WaveValue]
 collectValues state =
     mapMaybe
         collectValue
-        (identifiersDisplayed state)
+        (stateDisplayedIdentifiers state)
   where
     waveConstruct = stateWaveConstruct state
     waveMap = wWaveform waveConstruct

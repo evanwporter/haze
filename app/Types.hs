@@ -12,9 +12,9 @@ data Name = MainView
 data AppState = AppState
     { stateWaveConstruct :: WaveConstruct
     , stateCursor :: SimulationTime
-    , identifiersDisplayed :: [IdentifierCode]
+    , stateDisplayedIdentifiers :: [IdentifierCode]
     , stateSelectedIndex :: Maybe Int
-    {- ^ The selected identifer / row index in the list of identifiersDisplayed.
+    {- ^ The selected identifer / row index in the list of stateDisplayedIdentifiers.
     This is the selected wave for deleting or move waves.
     TODO: Make it a list eventually
     -}

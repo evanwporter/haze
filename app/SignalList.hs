@@ -2,10 +2,12 @@
 
 module SignalList where
 
+import Attributes
 import Brick
 import Brick.Widgets.Border (vBorder)
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (mapMaybe)
+import Data.Monoid (Ap)
 import qualified Data.Text as T
 import Haze
 import Types
@@ -18,13 +20,23 @@ signalList :: AppState -> Widget n
 signalList state =
     ( hLimit signalListWidth $
         vBox $
-            map (txt . signalLabel) references
+            mapMaybe signalRow identifierCodes
     )
         <+> vBorder
   where
+    selectedIndex = stateSelectedSignal state
+    identifierCodes = wcIdentifierCodes waveConstruct
+    selectedIdentifierCode = identifierCodes !! selectedIndex
     waveConstruct = stateWaveConstruct state
     symbolMap = wcSymbolMap waveConstruct
-    references = mapMaybe (flip HM.lookup symbolMap) (wcIdentifierCodes waveConstruct)
+
+    signalRow :: IdentifierCode -> Maybe (Widget n)
+    signalRow ident = do
+        reference <- HM.lookup ident symbolMap
+        let row = txt (signalLabel reference)
+        if ident == selectedIdentifierCode
+            then Just (withAttr selectedAttr row)
+            else Just row
 
 -- TODO: addSignal and removeSignal could be combined because they only have a
 -- one line difference
@@ -40,23 +52,16 @@ addSignal state =
 
         -- append the selected IdentifierCode to the list of displayed
         -- identifer codes
-        displayedWaves = identifiersDisplayed state ++ [selectedIdentifierCode]
+        displayedWaves = stateDisplayedIdentifiers state ++ [selectedIdentifierCode]
      in state
-            { identifiersDisplayed = displayedWaves
+            { stateDisplayedIdentifiers = displayedWaves
             }
 
-removeSignal :: AppState -> AppState
-removeSignal state =
-    let selectedIndex = stateSelectedSignal state
-        waveConstruct = stateWaveConstruct state
-        identifierCodes = wcIdentifierCodes waveConstruct
-
-        -- get the selected identifier code
-        selectedIdentifierCode = identifierCodes !! selectedIndex
-
-        -- remove (filter out) the selected IdentifierCode from the list of displayed
-        -- identifer codes
-        displayedWaves = filter (/= selectedIdentifierCode) (identifiersDisplayed state)
+changeSelectedSignal :: Int -> AppState -> AppState
+changeSelectedSignal diff state =
+    -- TODO: Cap how high it can go; currently it crashes if we go
+    -- to the max + 1
+    let new_index = max 0 ((stateSelectedSignal state) + diff)
      in state
-            { identifiersDisplayed = displayedWaves
+            { stateSelectedSignal = new_index
             }
