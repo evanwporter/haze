@@ -14,10 +14,14 @@ data AppState = AppState
     , stateCursor :: SimulationTime
     , identifiersDisplayed :: [IdentifierCode]
     , stateSelectedIndex :: Maybe Int
-    {- ^ The selected identifer / row index in the list of identifiersDisplayed
+    {- ^ The selected identifer / row index in the list of identifiersDisplayed.
+    This is the selected wave for deleting or move waves.
     TODO: Make it a list eventually
     -}
     , stateSelectedSignal :: Int
+    {- ^ The currently selected signal in the SignalList. Corresponds to the
+    entry in wcIdentifierCodes
+    -}
     }
 
 -- | A tick is set by the TimeScale in the VCD file header
