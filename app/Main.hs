@@ -11,6 +11,8 @@ import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Haze
 import ReferenceBar
+import Selection (changeSelection)
+import SignalList (signalList)
 import System.Environment (getArgs)
 import TimeBar
 import Types
@@ -73,7 +75,8 @@ initialState wave =
         { stateWaveConstruct = wave
         , stateCursor = wMin wave
         , -- TODO: Don't display all wavemaps to start
-          identifiersDisplayed = HM.keys $ wcSymbolMap wave
+          identifiersDisplayed = wcIdentifierCodes wave
+        , stateSelectedIndex = Just 0
         }
 
 -- TODO: Figure out what this does
@@ -112,17 +115,19 @@ drawUI state =
     [ -- The cursor is a layer
       cursorLayer state
     , -- Next layer is everything else
-      ( txt (T.replicate referenceBarWidth " ")
-            <+> txt "│"
-            <+> hLimit valueBarWidth (txt cursorTimeText)
-            -- <+> txt "│"
-            <+> padLeft (Pad 1) (timeBar state)
-      )
-        <=> ( hLimit referenceBarWidth (table (referenceBar state))
-                <+> vBorder
-                <+> hLimit valueBarWidth (table (valueBar state))
-                <+> vBorder
-                <+> waveformLayer state
+      (signalList state)
+        <+> ( ( txt (T.replicate referenceBarWidth " ")
+                    <+> txt "│"
+                    <+> hLimit valueBarWidth (txt cursorTimeText)
+                    -- <+> txt "│"
+                    <+> padLeft (Pad 1) (timeBar state)
+              )
+                <=> ( hLimit referenceBarWidth (table (referenceBar state))
+                        <+> vBorder
+                        <+> hLimit valueBarWidth (table (valueBar state))
+                        <+> vBorder
+                        <+> waveformLayer state
+                    )
             )
     ]
   where
@@ -143,6 +148,12 @@ app =
                 modify (moveCursor (-1))
             VtyEvent (V.EvKey (V.KChar 'l') []) ->
                 modify (moveCursor 1)
+            -- move down 1 selection
+            VtyEvent (V.EvKey (V.KChar 'j') []) ->
+                modify (changeSelection 1)
+            -- move up 1 selection
+            VtyEvent (V.EvKey (V.KChar 'k') []) ->
+                modify (changeSelection (-1))
             _ -> return ()
         , appStartEvent = return ()
         , appAttrMap = const waveAttrMap

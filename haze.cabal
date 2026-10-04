@@ -89,6 +89,8 @@ executable haze
                     , Values
                     , ReferenceBar
                     , TimeBar
+                    , Selection
+                    , SignalList
     default-language: Haskell2010
     ghc-options: -threaded
 

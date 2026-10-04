@@ -36,6 +36,10 @@ Corresponds to:
 vectorCharAttr :: AttrName
 vectorCharAttr = attrName "wave.vectorChar"
 
+-- | Attribute used for the currently selected signal.
+selectedAttr :: AttrName
+selectedAttr = attrName "wave.selected"
+
 -- | General attribute map for waveform rendering.
 waveAttrMap :: AttrMap
 waveAttrMap =
@@ -44,4 +48,5 @@ waveAttrMap =
         [ (highAttr, V.brightGreen `on` V.brightGreen)
         , (lowAttr, V.withForeColor V.defAttr V.brightGreen)
         , (vectorCharAttr, V.black `on` V.brightGreen)
+        , (selectedAttr, V.black `on` V.brightYellow)
         ]

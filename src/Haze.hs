@@ -22,6 +22,7 @@ data WaveConstruct = WaveConstruct
     , wMax :: SimulationTime
     , wcTimescale :: (TimeNumber, TimeUnit)
     , wcSymbolMap :: HM.HashMap IdentifierCode Reference
+    , wcIdentifierCodes :: [IdentifierCode]
     }
 
 {- | A Wave Segment is the section of the wave from
@@ -75,6 +76,19 @@ buildSymbolMap decls = buildMapHelper decls HM.empty
         Var _ _ ident ref -> buildMapHelper rest (HM.insert ident ref hm)
         _ -> buildMapHelper rest hm
 
+{- | Identifier codes in first declaration order. HashMap keys are unordered,
+so UI code should use this list whenever row order matters.
+-}
+buildIdentifierCodes :: [DeclarationCommand] -> [IdentifierCode]
+buildIdentifierCodes = go HM.empty
+  where
+    go :: HM.HashMap IdentifierCode () -> [DeclarationCommand] -> [IdentifierCode]
+    go _ [] = []
+    go seen (Var _ _ ident _ : rest)
+        | HM.member ident seen = go seen rest
+        | otherwise = ident : go (HM.insert ident () seen) rest
+    go seen (_ : rest) = go seen rest
+
 -- Ideally we don't use the IO monad here but I'm keeping it because its teaching me
 -- a lot about dealing with nested monads
 parseVCDFile :: FilePath -> IO (Either String WaveConstruct)
@@ -103,5 +117,6 @@ parseVCDFile path = do
     let timeScale = decl >>= getTimescale
 
     let symbolMap = buildSymbolMap <$> decl
+    let identifierCodes = buildIdentifierCodes <$> decl
 
-    return $ WaveConstruct <$> waveform <*> minTime <*> maxTime <*> timeScale <*> symbolMap
+    return $ WaveConstruct <$> waveform <*> minTime <*> maxTime <*> timeScale <*> symbolMap <*> identifierCodes

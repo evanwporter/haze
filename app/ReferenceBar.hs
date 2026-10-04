@@ -2,6 +2,7 @@
 
 module ReferenceBar where
 
+import Attributes
 import Brick
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe
@@ -14,10 +15,21 @@ import Types
 -}
 referenceBar :: AppState -> [Widget n]
 referenceBar state =
-    -- TODO: Make a function that displays these a little better
-    map (txt . T.pack . show) references
+    -- We make the assumption that every identifier has a corresponding reference
+    map buildWidget $ zip idents references
   where
     waveConstruct = stateWaveConstruct state
     identifierMap = wcSymbolMap waveConstruct
     idents = identifiersDisplayed state
     references = mapMaybe (flip HM.lookup identifierMap) idents
+    selectedIndex = stateSelectedIndex state
+    selectedIdent = (idents !!) <$> selectedIndex
+    buildWidget (ident, reference)
+        | Just ident == selectedIdent = withAttr selectedAttr (refToTxt reference)
+        | otherwise = refToTxt reference
+      where
+        -- TODO: Make a function that displays these a little better
+        refToTxt = txt . T.pack . show
+
+-- buildWidget :: Widget n
+-- buildWidget -> case
