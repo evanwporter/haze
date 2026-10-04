@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module ReferenceBar where
+module Panes.Waveform.ReferenceBar where
 
 import Attributes
 import Brick

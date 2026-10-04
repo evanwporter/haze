@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Values where
+module Panes.Waveform.Values where
 
 import Brick
 import qualified Data.HashMap.Strict as HM

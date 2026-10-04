@@ -1,4 +1,4 @@
-module Selection where
+module Panes.Waveform.Selection where
 
 import Types
 

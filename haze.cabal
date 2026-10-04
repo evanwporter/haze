@@ -84,15 +84,15 @@ executable haze
                     , unordered-containers
     hs-source-dirs:   app
     other-modules:    Attributes
-                    , Cursor
                     , Util
                     , Types
-                    , Values
-                    , ReferenceBar
-                    , TimeBar
-                    , Selection
                     , Panes.SignalList
                     , Panes.Waveform
+                    , Panes.Waveform.Cursor
+                    , Panes.Waveform.ReferenceBar
+                    , Panes.Waveform.Selection
+                    , Panes.Waveform.TimeBar
+                    , Panes.Waveform.Values
     default-language: Haskell2010
     ghc-options: -threaded
 

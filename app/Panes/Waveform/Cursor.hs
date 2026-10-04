@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Cursor where
+module Panes.Waveform.Cursor where
 
 import Brick
 import Haze

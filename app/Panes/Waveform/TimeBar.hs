@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module TimeBar where
+module Panes.Waveform.TimeBar where
 
 import Brick
 import qualified Data.Text as T
