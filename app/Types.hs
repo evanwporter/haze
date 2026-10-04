@@ -17,6 +17,10 @@ data WaveformPaneState = WaveformPaneState
     { waveformCursor :: SimulationTime
     , waveformDisplayedIdentifiers :: [IdentifierCode]
     , waveformSelectedIndex :: Maybe Int
+    , waveformViewportStart :: SimulationTime
+    -- ^ The simulation time at the left edge of the waveform drawing area.
+    , waveformViewportWidth :: Int
+    -- ^ The number of terminal columns available for waveform samples.
     -- ^ The selected row among the signals displayed in the waveform.
     }
 
@@ -51,3 +55,7 @@ waveformDisplayXOffset :: Int
 -- Includes the two pane borders, their one-column padding, and the waveform
 -- layer's own left padding.
 waveformDisplayXOffset = signalListWidth + valueBarWidth + referenceBarWidth + 9
+
+-- | A reasonable initial width until Brick delivers the first resize event.
+defaultWaveformViewportWidth :: Int
+defaultWaveformViewportWidth = 80 - waveformDisplayXOffset - 2

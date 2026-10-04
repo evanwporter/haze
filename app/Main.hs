@@ -5,12 +5,14 @@ module Main where
 import Attributes
 import Brick
 import Brick.Widgets.Border (borderAttr, borderWithLabel)
+import Control.Monad.IO.Class (liftIO)
 import qualified Graphics.Vty as V
 import Haze
 import Panes.SignalList
 import Panes.Waveform
 import Panes.Waveform.Cursor
 import Panes.Waveform.Selection
+import Panes.Waveform.Viewport
 import System.Environment (getArgs)
 import Types
 import Util
@@ -35,10 +37,17 @@ app =
             -- Tab moves keyboard focus between the two panes.
             VtyEvent (V.EvKey (V.KChar '\t') []) ->
                 modify switchFocusedPane
+            -- Keep the rendered waveform range equal to the terminal space
+            -- available after a resize.
+            VtyEvent (V.EvResize terminalWidth _) ->
+                modify (resizeWaveformViewport terminalWidth)
             VtyEvent vtyEvent ->
                 modify (handlePaneEvent vtyEvent)
             _ -> return ()
-        , appStartEvent = return ()
+        , appStartEvent = do
+            vty <- getVtyHandle
+            (terminalWidth, _) <- liftIO $ V.displayBounds (V.outputIface vty)
+            modify (resizeWaveformViewport terminalWidth)
         , appAttrMap = const waveAttrMap
         }
 

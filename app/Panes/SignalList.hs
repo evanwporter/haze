@@ -58,9 +58,8 @@ addSignal state =
 
 changeSelectedSignal :: Int -> AppState -> AppState
 changeSelectedSignal diff state =
-    -- TODO: Cap how high it can go; currently it crashes if we go
-    -- to the max + 1
     let signalListState = stateSignalList state
+        -- Clamp the new index
         newIndex = min selectionLength (max 0 (signalListSelectedSignal signalListState + diff))
         waveConstruct = stateWaveConstruct state
         identifierCodes = wcIdentifierCodes waveConstruct

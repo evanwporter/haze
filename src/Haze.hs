@@ -54,6 +54,26 @@ constructWaveSegments maxTime (curr : next : rest) =
         waveSegmentData = WaveSegmentData value (nextTime - currTime)
      in waveSegmentData : constructWaveSegments maxTime (next : rest)
 
+-- TODO: Understand how this works
+constructVisibleWaveSegments ::
+    SimulationTime ->
+    SimulationTime ->
+    [(SimulationTime, WaveValue)] ->
+    [WaveSegmentData]
+constructVisibleWaveSegments viewStart viewEnd values =
+    constructWaveSegments viewEnd visibleValues
+  where
+    valuesBeforeStart =
+        takeWhile (\(time, _) -> time <= viewStart) values
+
+    valuesAfterStart =
+        takeWhile (\(time, _) -> time <= viewEnd) $
+            dropWhile (\(time, _) -> time <= viewStart) values
+
+    visibleValues = case valuesBeforeStart of
+        [] -> valuesAfterStart
+        _ -> (viewStart, snd (last valuesBeforeStart)) : valuesAfterStart
+
 getTimescale :: [DeclarationCommand] -> Either String (TimeNumber, TimeUnit)
 getTimescale [] = Left "There is no TimeScale in the waveform header."
 getTimescale (decl : rest) = case decl of

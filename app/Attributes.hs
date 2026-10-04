@@ -40,6 +40,10 @@ vectorCharAttr = attrName "wave.vectorChar"
 selectedAttr :: AttrName
 selectedAttr = attrName "wave.selected"
 
+-- | Solid background used for the waveform time cursor.
+cursorAttr :: AttrName
+cursorAttr = attrName "wave.cursor"
+
 focusedPaneAttr :: AttrName
 focusedPaneAttr = attrName "pane.focused"
 
@@ -59,6 +63,7 @@ waveAttrMap =
         , (lowAttr, V.withForeColor V.defAttr V.brightGreen)
         , (vectorCharAttr, V.black `on` V.brightGreen)
         , (selectedAttr, V.black `on` V.brightYellow)
+        , (cursorAttr, V.black `on` V.brightYellow)
         , (focusedPaneAttr, V.withForeColor V.defAttr V.brightGreen)
         , (unfocusedPaneAttr, V.withForeColor V.defAttr V.brightBlack)
         , (internalBorderAttr, V.defAttr)

@@ -11,6 +11,7 @@ import Haze
 import Panes.Waveform.ReferenceBar
 import Panes.Waveform.TimeBar
 import Panes.Waveform.Values
+import Panes.Waveform.Viewport
 import Types
 import Util
 
@@ -75,6 +76,8 @@ initialState wave =
                 , -- TODO: Don't display all wavemaps to start
                   waveformDisplayedIdentifiers = wcIdentifierCodes wave
                 , waveformSelectedIndex = Just 0
+                , waveformViewportStart = wMin wave
+                , waveformViewportWidth = defaultWaveformViewportWidth
                 }
         , stateFocusedPane = WaveformPane
         }
@@ -82,11 +85,13 @@ initialState wave =
 -- TODO: Figure out what this does
 waveEntries :: AppState -> WaveConstruct -> [Widget Name]
 waveEntries state waveConstruct =
-    [ waveSegmentsToWidget (constructWaveSegments maxTime values)
+    [ waveSegmentsToWidget (constructVisibleWaveSegments viewStart viewEnd values)
     | ident <- waveformDisplayedIdentifiers (stateWaveform state)
     , Just values <- [HM.lookup ident (wWaveform waveConstruct)]
-    , let maxTime = wMax waveConstruct
     ]
+  where
+    viewStart = waveformViewportStart (stateWaveform state)
+    viewEnd = waveformViewEnd state
 
 {- | Takes a list of widgets and stacks them vertically with
 a horizontal line between each.
@@ -105,10 +110,12 @@ waveformLayer state =
     table
         -- applies our widget creation function to every entry
         ( map
-            (padLeftRight 1)
+            (padLeftRight 1 . hLimit viewportWidth)
             -- returns the list of entries within state
             (waveEntries state (stateWaveConstruct state))
         )
+  where
+    viewportWidth = waveformViewportWidth (stateWaveform state)
 
 -- | The complete right-hand pane: its time header and the waveform rows.
 waveformPane :: AppState -> Widget Name
@@ -121,8 +128,9 @@ waveformHeader state =
     txt (T.replicate referenceBarWidth " ")
         <+> txt "│"
         <+> hLimit valueBarWidth (txt cursorTimeText)
-        <+> padLeft (Pad 1) (timeBar state)
+        <+> padLeft (Pad 2) (hLimit viewportWidth (timeBar state))
   where
+    viewportWidth = waveformViewportWidth (stateWaveform state)
     SimulationTime cursorTime = waveformCursor (stateWaveform state)
     cursorTimeText =
         T.justifyLeft valueBarWidth ' ' (T.pack (show cursorTime))
