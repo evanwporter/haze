@@ -6,7 +6,6 @@ module Haze (
 )
 where
 
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.IO as TIO
 import Parser
 import Types

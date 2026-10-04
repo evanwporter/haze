@@ -14,6 +14,7 @@ import Haze
 import System.Environment (getArgs)
 import Types
 import Util
+import Values
 
 logicBase :: Value -> Int -> Widget n
 logicBase value width =
@@ -84,6 +85,9 @@ waveEntries waveConstruct =
             Just values -> constructWaveSegments maxTime values
     ]
 
+{- | Takes a list of widgets and stacks them vertically with
+a horizontal line between each.
+-}
 table :: [Widget n] -> Widget n
 table [] = emptyWidget
 table [x] = x -- checks if there is one entry
@@ -95,24 +99,27 @@ table (x : xs) =
 
 waveformLayer :: AppState -> Widget Name
 waveformLayer state =
-    joinBorders $
-        border $
-            ( table
-                -- applies our widget creation function to every entry
-                ( map
-                    (padLeftRight 1)
-                    -- returns the list of entries within state
-                    (waveEntries (stateWaveConstruct state))
-                )
-                -- this vertically places a fill widget which expands to take up
-                -- all unused space
-                <=> fill ' '
-            )
+    table
+        -- applies our widget creation function to every entry
+        ( map
+            (padLeftRight 1)
+            -- returns the list of entries within state
+            (waveEntries (stateWaveConstruct state))
+        )
+
+-- this vertically places a fill widget which expands to take up
+-- all unused space
+-- <=> fill ' '
 
 drawUI :: AppState -> [Widget Name]
 drawUI state =
-    [ cursorLayer state
-    , waveformLayer state
+    [ -- Layer widgets
+      hLimit valueBarWidth emptyWidget
+        <+> vBorder
+        <+> cursorLayer state
+    , hLimit valueBarWidth (table (valueBar state))
+        <+> vBorder
+        <+> waveformLayer state
     ]
 
 app :: App AppState e Name

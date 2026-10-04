@@ -16,3 +16,7 @@ data AppState = AppState
 -- | A tick is set by the TimeScale in the VCD file header
 columnsPerTick :: Int
 columnsPerTick = 2
+
+-- TODO: Move into state
+valueBarWidth :: Int
+valueBarWidth = 10

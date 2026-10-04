@@ -9,12 +9,12 @@ import Util
 
 cursorLayer :: AppState -> Widget Name
 cursorLayer state =
-    translateBy (Location (cursorX, 0)) $
+    translateBy (Location (cursorX, 1)) $
         vBox $
             replicate (tableHeight state) (txt "|")
   where
     SimulationTime t = stateCursor state
-    cursorX = t * columnsPerTick
+    cursorX = t * columnsPerTick + valueBarWidth
 
 moveCursor :: Int -> AppState -> AppState
 moveCursor amount state =
