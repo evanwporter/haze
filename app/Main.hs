@@ -5,20 +5,20 @@ module Main where
 import Attributes
 import Brick
 import Brick.Widgets.Border
-import Panes.Waveform.Cursor
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Haze
-import Panes.Waveform.ReferenceBar
-import Panes.Waveform.Selection
 import Panes.SignalList
 import Panes.Waveform
-import System.Environment (getArgs)
+import Panes.Waveform.Cursor
+import Panes.Waveform.ReferenceBar
+import Panes.Waveform.Selection
 import Panes.Waveform.TimeBar
+import Panes.Waveform.Values
+import System.Environment (getArgs)
 import Types
 import Util
-import Panes.Waveform.Values
 
 drawUI :: AppState -> [Widget Name]
 drawUI state =

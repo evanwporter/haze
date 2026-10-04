@@ -54,7 +54,7 @@ addSignal state =
         waveformState = stateWaveform state
         displayedWaves = waveformDisplayedIdentifiers waveformState ++ [selectedIdentifierCode]
      in state
-            { stateWaveform = waveformState {waveformDisplayedIdentifiers = displayedWaves}
+            { stateWaveform = waveformState{waveformDisplayedIdentifiers = displayedWaves}
             }
 
 changeSelectedSignal :: Int -> AppState -> AppState
@@ -64,5 +64,5 @@ changeSelectedSignal diff state =
     let signalListState = stateSignalList state
         newIndex = max 0 (signalListSelectedSignal signalListState + diff)
      in state
-            { stateSignalList = signalListState {signalListSelectedSignal = newIndex}
+            { stateSignalList = signalListState{signalListSelectedSignal = newIndex}
             }

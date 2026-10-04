@@ -65,7 +65,7 @@ initialState :: WaveConstruct -> AppState
 initialState wave =
     AppState
         { stateWaveConstruct = wave
-        , stateSignalList = SignalListPaneState {signalListSelectedSignal = 0}
+        , stateSignalList = SignalListPaneState{signalListSelectedSignal = 0}
         , stateWaveform =
             WaveformPaneState
                 { waveformCursor = wMin wave

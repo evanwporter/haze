@@ -7,7 +7,7 @@ changeSelection diff state =
     let waveformState = stateWaveform state
         newIndex = (+ diff) <$> waveformSelectedIndex waveformState
      in state
-            { stateWaveform = waveformState {waveformSelectedIndex = newIndex}
+            { stateWaveform = waveformState{waveformSelectedIndex = newIndex}
             }
 
 removeSignal :: AppState -> AppState

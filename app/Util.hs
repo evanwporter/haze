@@ -1,7 +1,5 @@
 module Util where
 
-import qualified Data.HashMap.Strict as HM
-import Haze
 import Types
 
 -- | Width of a segment
