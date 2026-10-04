@@ -17,7 +17,7 @@ timeBar state =
   where
     waveformState = stateWaveform state
     SimulationTime viewStart = waveformViewportStart waveformState
-    SimulationTime viewEnd = waveformViewEnd state
+    SimulationTime viewEnd = waveformViewportEnd state
 
     ticksPerLabel = 5
     columnsPerLabel = ticksPerLabel * columnsPerTick

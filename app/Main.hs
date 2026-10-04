@@ -73,6 +73,8 @@ handlePaneEvent event state =
             V.EvKey (V.KChar 'j') [] -> changeSelection 1 state
             V.EvKey (V.KChar 'k') [] -> changeSelection (-1) state
             V.EvKey (V.KChar 'd') [] -> removeSignal state
+            V.EvKey (V.KChar 'u') [V.MCtrl] -> shift50Percent (-1) state
+            V.EvKey (V.KChar 'd') [V.MCtrl] -> shift50Percent 1 state
             _ -> state
 
 main :: IO ()

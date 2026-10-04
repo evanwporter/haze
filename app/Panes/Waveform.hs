@@ -91,7 +91,7 @@ waveEntries state waveConstruct =
     ]
   where
     viewStart = waveformViewportStart (stateWaveform state)
-    viewEnd = waveformViewEnd state
+    viewEnd = waveformViewportEnd state
 
 {- | Takes a list of widgets and stacks them vertically with
 a horizontal line between each.

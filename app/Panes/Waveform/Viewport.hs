@@ -10,8 +10,8 @@ waveformVisibleTicks waveformState =
     max 1 (waveformViewportWidth waveformState `div` columnsPerTick)
 
 -- | The final simulation time currently visible in the waveform pane.
-waveformViewEnd :: AppState -> SimulationTime
-waveformViewEnd state =
+waveformViewportEnd :: AppState -> SimulationTime
+waveformViewportEnd state =
     SimulationTime (min maxTime (viewStart + waveformVisibleTicks waveformState))
   where
     waveConstruct = stateWaveConstruct state
@@ -45,7 +45,7 @@ keepCursorVisible state =
     waveformState = stateWaveform state
     SimulationTime cursor = waveformCursor waveformState
     SimulationTime viewStart = waveformViewportStart waveformState
-    SimulationTime viewEnd = waveformViewEnd state
+    SimulationTime viewEnd = waveformViewportEnd state
     SimulationTime minTime = wMin (stateWaveConstruct state)
     visibleTicks = waveformVisibleTicks waveformState
 
@@ -58,3 +58,18 @@ keepCursorVisible state =
 
     -- The left edge cannot precede the beginning of the simulation.
     clampToMinimum start = SimulationTime (max minTime start)
+
+shift50Percent :: Int -> AppState -> AppState
+shift50Percent diff state =
+    state
+        { stateWaveform =
+            waveform
+                { waveformViewportStart =
+                    SimulationTime (start + diff * shiftAmount)
+                }
+        }
+  where
+    waveform = stateWaveform state
+    SimulationTime start = waveformViewportStart waveform
+    visibleTicks = waveformVisibleTicks waveform
+    shiftAmount = visibleTicks `div` 2
