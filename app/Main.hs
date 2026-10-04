@@ -7,7 +7,6 @@ import Brick
 import Brick.Widgets.Border
 import Cursor
 import qualified Data.HashMap.Strict as HM
-import Data.List (sortOn)
 import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Haze
@@ -21,6 +20,7 @@ logicBase value width =
     case value of
         V0 -> withAttr lowAttr $ txt $ T.replicate width "▁"
         V1 -> withAttr highAttr $ txt $ T.replicate width " "
+        -- TODO: handle Vx, VX, etc
         _ -> withAttr highAttr $ txt $ T.replicate width " "
 
 waveToWidget :: WaveSegmentData -> Maybe WaveSegmentData -> Widget n
@@ -69,20 +69,19 @@ initialState :: WaveConstruct -> AppState
 initialState wave =
     AppState
         { stateWaveConstruct = wave
-        , stateCursor = SimulationTime 0
-        , symbolsShown = []
+        , stateCursor = wMin wave
+        , -- TODO: Don't display all wavemaps to start
+          identifiersDisplayed = HM.keys $ wcSymbolMap wave
         }
 
 -- TODO: Figure out what this does
-waveEntries :: WaveConstruct -> [Widget Name]
-waveEntries waveConstruct =
+waveEntries :: AppState -> WaveConstruct -> [Widget Name]
+waveEntries state waveConstruct =
     [ withAttr lowAttr (txt (code <> ": "))
-        <+> waveSegmentsToWidget segments
-    | (ident@(IdentifierCode code), _) <- sortOn fst $ HM.toList (wWaveform waveConstruct)
+        <+> waveSegmentsToWidget (constructWaveSegments maxTime values)
+    | ident@(IdentifierCode code) <- identifiersDisplayed state
+    , Just values <- [HM.lookup ident (wWaveform waveConstruct)]
     , let maxTime = wMax waveConstruct
-          segments = case HM.lookup ident (wWaveform waveConstruct) of
-            Nothing -> []
-            Just values -> constructWaveSegments maxTime values
     ]
 
 {- | Takes a list of widgets and stacks them vertically with
@@ -104,7 +103,7 @@ waveformLayer state =
         ( map
             (padLeftRight 1)
             -- returns the list of entries within state
-            (waveEntries (stateWaveConstruct state))
+            (waveEntries state (stateWaveConstruct state))
         )
 
 drawUI :: AppState -> [Widget Name]
@@ -112,7 +111,7 @@ drawUI state =
     [ -- The cursor is a layer
       cursorLayer state
     , -- Next layer is everything else
-      hBorder -- TODO Instead of hborder the top bar should be the timescale
+      hBorder -- TODO: Instead of hborder the top bar should be the timescale
         <=> ( hLimit valueBarWidth (table (valueBar state))
                 <+> vBorder
                 <+> waveformLayer state

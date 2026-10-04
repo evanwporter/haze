@@ -5,19 +5,21 @@ module Cursor where
 import Brick
 import Haze
 import Types
-import Util
 
 cursorLayer :: AppState -> Widget Name
 cursorLayer state =
     translateBy (Location (cursorX, 1)) $
         vBox $
-            replicate (tableHeight state) (txt "|")
+            replicate (height) (txt "|")
   where
     SimulationTime t = stateCursor state
+
     -- waveformLayer starts after the value bar, separator, and its left pad.
     -- The cursor is rendered as an independent layer, so this is its absolute
     -- screen position.
     cursorX = t * columnsPerTick + valueBarWidth + 2
+
+    height = ((length $ identifiersDisplayed state) * 2) - 1
 
 moveCursor :: Int -> AppState -> AppState
 moveCursor amount state =

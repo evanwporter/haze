@@ -12,6 +12,10 @@ import Parser
 import Types
 import Waveform
 
+{- | This is the primary output type for the Haze library. Ideally
+everything that is needed to display the waveform should be contained
+in this data block.
+-}
 data WaveConstruct = WaveConstruct
     { wWaveform :: WaveValueMap
     , wMin :: SimulationTime
