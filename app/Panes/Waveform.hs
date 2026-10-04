@@ -8,6 +8,9 @@ import Brick.Widgets.Border
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import Haze
+import Panes.Waveform.ReferenceBar
+import Panes.Waveform.TimeBar
+import Panes.Waveform.Values
 import Types
 import Util
 
@@ -73,6 +76,7 @@ initialState wave =
                   waveformDisplayedIdentifiers = wcIdentifierCodes wave
                 , waveformSelectedIndex = Just 0
                 }
+        , stateFocusedPane = WaveformPane
         }
 
 -- TODO: Figure out what this does
@@ -105,3 +109,28 @@ waveformLayer state =
             -- returns the list of entries within state
             (waveEntries state (stateWaveConstruct state))
         )
+
+-- | The complete right-hand pane: its time header and the waveform rows.
+waveformPane :: AppState -> Widget Name
+waveformPane state =
+    waveformHeader state
+        <=> waveformBody state
+
+waveformHeader :: AppState -> Widget Name
+waveformHeader state =
+    txt (T.replicate referenceBarWidth " ")
+        <+> txt "│"
+        <+> hLimit valueBarWidth (txt cursorTimeText)
+        <+> padLeft (Pad 1) (timeBar state)
+  where
+    SimulationTime cursorTime = waveformCursor (stateWaveform state)
+    cursorTimeText =
+        T.justifyLeft valueBarWidth ' ' (T.pack (show cursorTime))
+
+waveformBody :: AppState -> Widget Name
+waveformBody state =
+    hLimit referenceBarWidth (table (referenceBar state))
+        <+> vBorder
+        <+> hLimit valueBarWidth (table (valueBar state))
+        <+> vBorder
+        <+> waveformLayer state

@@ -4,7 +4,6 @@ module Panes.SignalList where
 
 import Attributes
 import Brick
-import Brick.Widgets.Border (vBorder)
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
@@ -15,13 +14,13 @@ signalLabel :: Reference -> T.Text
 signalLabel reference =
     T.justifyLeft signalListWidth ' ' (T.pack (show reference))
 
-signalList :: AppState -> Widget n
-signalList state =
-    ( hLimit signalListWidth $
-        vBox $
-            mapMaybe signalRow identifierCodes
-    )
-        <+> vBorder
+signalListPane :: AppState -> Widget n
+signalListPane state =
+    hLimit signalListWidth $
+        vBox
+            [ vBox (mapMaybe signalRow identifierCodes)
+            , fill ' '
+            ]
   where
     selectedIndex = signalListSelectedSignal (stateSignalList state)
     identifierCodes = wcIdentifierCodes waveConstruct
@@ -62,7 +61,10 @@ changeSelectedSignal diff state =
     -- TODO: Cap how high it can go; currently it crashes if we go
     -- to the max + 1
     let signalListState = stateSignalList state
-        newIndex = max 0 (signalListSelectedSignal signalListState + diff)
+        newIndex = min selectionLength (max 0 (signalListSelectedSignal signalListState + diff))
+        waveConstruct = stateWaveConstruct state
+        identifierCodes = wcIdentifierCodes waveConstruct
+        selectionLength = length identifierCodes - 1
      in state
             { stateSignalList = signalListState{signalListSelectedSignal = newIndex}
             }

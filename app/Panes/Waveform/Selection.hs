@@ -5,7 +5,8 @@ import Types
 changeSelection :: Int -> AppState -> AppState
 changeSelection diff state =
     let waveformState = stateWaveform state
-        newIndex = (+ diff) <$> waveformSelectedIndex waveformState
+        selectionLength = length (waveformDisplayedIdentifiers waveformState) - 1
+        newIndex = (min selectionLength) <$> (max 0) <$> ((+ diff) <$> waveformSelectedIndex waveformState)
      in state
             { stateWaveform = waveformState{waveformSelectedIndex = newIndex}
             }

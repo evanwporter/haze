@@ -40,6 +40,16 @@ vectorCharAttr = attrName "wave.vectorChar"
 selectedAttr :: AttrName
 selectedAttr = attrName "wave.selected"
 
+focusedPaneAttr :: AttrName
+focusedPaneAttr = attrName "pane.focused"
+
+unfocusedPaneAttr :: AttrName
+unfocusedPaneAttr = attrName "pane.unfocused"
+
+-- | The normal color for borders that divide content inside a pane.
+internalBorderAttr :: AttrName
+internalBorderAttr = attrName "border.internal"
+
 -- | General attribute map for waveform rendering.
 waveAttrMap :: AttrMap
 waveAttrMap =
@@ -49,4 +59,7 @@ waveAttrMap =
         , (lowAttr, V.withForeColor V.defAttr V.brightGreen)
         , (vectorCharAttr, V.black `on` V.brightGreen)
         , (selectedAttr, V.black `on` V.brightYellow)
+        , (focusedPaneAttr, V.withForeColor V.defAttr V.brightGreen)
+        , (unfocusedPaneAttr, V.withForeColor V.defAttr V.brightBlack)
+        , (internalBorderAttr, V.defAttr)
         ]

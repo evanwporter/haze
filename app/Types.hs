@@ -20,11 +20,17 @@ data WaveformPaneState = WaveformPaneState
     -- ^ The selected row among the signals displayed in the waveform.
     }
 
+data Pane
+    = SignalListPane
+    | WaveformPane
+    deriving (Eq, Show)
+
 -- | State shared by the Haze application and its UI layers.
 data AppState = AppState
     { stateWaveConstruct :: WaveConstruct
     , stateSignalList :: SignalListPaneState
     , stateWaveform :: WaveformPaneState
+    , stateFocusedPane :: Pane
     }
 
 -- | A tick is set by the TimeScale in the VCD file header
@@ -42,9 +48,6 @@ signalListWidth :: Int
 signalListWidth = 15
 
 waveformDisplayXOffset :: Int
-waveformDisplayXOffset = signalListWidth + valueBarWidth + referenceBarWidth
-
-data Pane
-    = SignalListPane
-    | WaveformPane
-    deriving (Eq, Show)
+-- Includes the two pane borders, their one-column padding, and the waveform
+-- layer's own left padding.
+waveformDisplayXOffset = signalListWidth + valueBarWidth + referenceBarWidth + 9
