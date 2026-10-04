@@ -10,7 +10,7 @@ cursorLayer :: AppState -> Widget Name
 cursorLayer state =
     translateBy (Location (cursorX, 1)) $
         vBox $
-            replicate (height) (txt "|")
+            replicate (height) (txt "|") -- TODO: make this a solid background color or something nicer
   where
     SimulationTime t = stateCursor state
 
@@ -18,7 +18,7 @@ cursorLayer state =
     -- and its left pad.  Time zero is the first waveform column.
     -- The cursor is rendered as an independent layer, so this is its absolute
     -- screen position.
-    cursorX = t * columnsPerTick + referenceBarWidth + valueBarWidth + 3
+    cursorX = t * columnsPerTick + waveformDisplayXOffset + 3
 
     height = ((length $ identifiersDisplayed state) * 2) - 1
 

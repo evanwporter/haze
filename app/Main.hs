@@ -12,6 +12,7 @@ import qualified Graphics.Vty as V
 import Haze
 import ReferenceBar
 import System.Environment (getArgs)
+import TimeBar
 import Types
 import Util
 import Values
@@ -111,7 +112,12 @@ drawUI state =
     [ -- The cursor is a layer
       cursorLayer state
     , -- Next layer is everything else
-      hBorder -- TODO: Instead of hborder the top bar should be the timescale
+      ( txt (T.replicate referenceBarWidth " ")
+            <+> txt "│"
+            <+> hLimit valueBarWidth (txt cursorTimeText)
+            -- <+> txt "│"
+            <+> padLeft (Pad 1) (timeBar state)
+      )
         <=> ( hLimit referenceBarWidth (table (referenceBar state))
                 <+> vBorder
                 <+> hLimit valueBarWidth (table (valueBar state))
@@ -119,6 +125,10 @@ drawUI state =
                 <+> waveformLayer state
             )
     ]
+  where
+    SimulationTime cursorTime = stateCursor state
+    cursorTimeText =
+        T.justifyLeft valueBarWidth ' ' (T.pack (show cursorTime))
 
 app :: App AppState e Name
 app =

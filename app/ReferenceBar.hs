@@ -14,6 +14,7 @@ import Types
 -}
 referenceBar :: AppState -> [Widget n]
 referenceBar state =
+    -- TODO: Make a function that displays these a little better
     map (txt . T.pack . show) references
   where
     waveConstruct = stateWaveConstruct state
