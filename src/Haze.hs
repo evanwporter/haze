@@ -6,6 +6,7 @@ module Haze (
 )
 where
 
+import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.IO as TIO
 import Parser
 import Types
@@ -16,6 +17,7 @@ data WaveConstruct = WaveConstruct
     , wMin :: SimulationTime
     , wMax :: SimulationTime
     , wcTimescale :: (TimeNumber, TimeUnit)
+    , wcSymbolMap :: HM.HashMap IdentifierCode Reference
     }
 
 {- | A Wave Segment is the section of the wave from
@@ -54,6 +56,21 @@ getTimescale (decl : rest) = case decl of
         Right (timeNumber, timeUnit)
     _ -> getTimescale rest
 
+buildSymbolMap :: [DeclarationCommand] -> HM.HashMap IdentifierCode Reference
+buildSymbolMap decls = buildMapHelper decls HM.empty
+  where
+    buildMapHelper ::
+        [DeclarationCommand] ->
+        HM.HashMap IdentifierCode Reference ->
+        HM.HashMap IdentifierCode Reference
+
+    -- if the list is empty then there's no more stuff to parse to we
+    -- return the input hash map
+    buildMapHelper [] hm = hm
+    buildMapHelper (decl : rest) hm = case decl of
+        Var _ _ ident ref -> buildMapHelper rest (HM.insert ident ref hm)
+        _ -> buildMapHelper rest hm
+
 -- Ideally we don't use the IO monad here but I'm keeping it because its teaching me
 -- a lot about dealing with nested monads
 parseVCDFile :: FilePath -> IO (Either String WaveConstruct)
@@ -81,4 +98,6 @@ parseVCDFile path = do
     -- https://www.quora.com/What-do-the-symbols-and-mean-in-haskell
     let timeScale = decl >>= getTimescale
 
-    return $ WaveConstruct <$> waveform <*> minTime <*> maxTime <*> timeScale
+    let symbolMap = buildSymbolMap <$> decl
+
+    return $ WaveConstruct <$> waveform <*> minTime <*> maxTime <*> timeScale <*> symbolMap
