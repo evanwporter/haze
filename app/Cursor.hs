@@ -4,7 +4,6 @@ module Cursor where
 
 import Brick
 import Haze
-import ReferenceBar (referenceBar)
 import Types
 
 cursorLayer :: AppState -> Widget Name
@@ -15,10 +14,11 @@ cursorLayer state =
   where
     SimulationTime t = stateCursor state
 
-    -- waveformLayer starts after the value bar, separator, and its left pad.
+    -- waveformLayer starts after the reference bar, value bar, separators,
+    -- and its left pad.  Time zero is the first waveform column.
     -- The cursor is rendered as an independent layer, so this is its absolute
     -- screen position.
-    cursorX = t * columnsPerTick + referenceBarWidth + valueBarWidth + 2
+    cursorX = t * columnsPerTick + referenceBarWidth + valueBarWidth + 3
 
     height = ((length $ identifiersDisplayed state) * 2) - 1
 

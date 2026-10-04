@@ -78,9 +78,8 @@ initialState wave =
 -- TODO: Figure out what this does
 waveEntries :: AppState -> WaveConstruct -> [Widget Name]
 waveEntries state waveConstruct =
-    [ withAttr lowAttr (txt (code <> ": "))
-        <+> waveSegmentsToWidget (constructWaveSegments maxTime values)
-    | ident@(IdentifierCode code) <- identifiersDisplayed state
+    [ waveSegmentsToWidget (constructWaveSegments maxTime values)
+    | ident <- identifiersDisplayed state
     , Just values <- [HM.lookup ident (wWaveform waveConstruct)]
     , let maxTime = wMax waveConstruct
     ]

@@ -21,8 +21,8 @@ This is also the color combination currently used by
 rising/falling logic edges and left/right vector edges.
 
 Corresponds to:
-  foreground = vivid green
-  background = vivid black
+foreground = vivid green
+background = terminal default
 -}
 lowAttr :: AttrName
 lowAttr = attrName "wave.low"
@@ -42,6 +42,6 @@ waveAttrMap =
     attrMap
         V.defAttr
         [ (highAttr, V.brightGreen `on` V.brightGreen)
-        , (lowAttr, V.brightGreen `on` V.brightBlack)
+        , (lowAttr, V.withForeColor V.defAttr V.brightGreen)
         , (vectorCharAttr, V.black `on` V.brightGreen)
         ]
