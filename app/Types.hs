@@ -10,4 +10,9 @@ data Name = MainView
 data AppState = AppState
     { stateWaveConstruct :: WaveConstruct
     , stateCursor :: SimulationTime
+    , symbolsShown :: [String]
     }
+
+-- | A tick is set by the TimeScale in the VCD file header
+columnsPerTick :: Int
+columnsPerTick = 2

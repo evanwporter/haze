@@ -5,6 +5,7 @@ module Cursor where
 import Brick
 import Haze
 import Types
+import Util
 
 cursorLayer :: AppState -> Widget Name
 cursorLayer state =

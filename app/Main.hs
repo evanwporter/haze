@@ -13,13 +13,7 @@ import qualified Graphics.Vty as V
 import Haze
 import System.Environment (getArgs)
 import Types
-
-columnsPerTick :: Int
-columnsPerTick = 2
-
--- | Width of a segment
-segmentWidth :: Int -> Int
-segmentWidth dur = columnsPerTick * (max 0 dur)
+import Util
 
 logicBase :: Value -> Int -> Widget n
 logicBase value width =
@@ -75,6 +69,7 @@ initialState wave =
     AppState
         { stateWaveConstruct = wave
         , stateCursor = SimulationTime 0
+        , symbolsShown = []
         }
 
 -- TODO: Figure out what this does
