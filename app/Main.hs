@@ -10,6 +10,7 @@ import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Haze
+import ReferenceBar
 import System.Environment (getArgs)
 import Types
 import Util
@@ -112,7 +113,9 @@ drawUI state =
       cursorLayer state
     , -- Next layer is everything else
       hBorder -- TODO: Instead of hborder the top bar should be the timescale
-        <=> ( hLimit valueBarWidth (table (valueBar state))
+        <=> ( hLimit referenceBarWidth (table (referenceBar state))
+                <+> vBorder
+                <+> hLimit valueBarWidth (table (valueBar state))
                 <+> vBorder
                 <+> waveformLayer state
             )

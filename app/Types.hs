@@ -20,3 +20,6 @@ columnsPerTick = 2
 -- TODO: Move into state
 valueBarWidth :: Int
 valueBarWidth = 10
+
+referenceBarWidth :: Int
+referenceBarWidth = 30
