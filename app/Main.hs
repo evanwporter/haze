@@ -107,19 +107,16 @@ waveformLayer state =
             (waveEntries (stateWaveConstruct state))
         )
 
--- this vertically places a fill widget which expands to take up
--- all unused space
--- <=> fill ' '
-
 drawUI :: AppState -> [Widget Name]
 drawUI state =
-    [ -- Layer widgets
-      hLimit valueBarWidth emptyWidget
-        <+> vBorder
-        <+> cursorLayer state
-    , hLimit valueBarWidth (table (valueBar state))
-        <+> vBorder
-        <+> waveformLayer state
+    [ -- The cursor is a layer
+      cursorLayer state
+    , -- Next layer is everything else
+      hBorder -- TODO Instead of hborder the top bar should be the timescale
+        <=> ( hLimit valueBarWidth (table (valueBar state))
+                <+> vBorder
+                <+> waveformLayer state
+            )
     ]
 
 app :: App AppState e Name
@@ -128,10 +125,12 @@ app =
         { appDraw = drawUI
         , appChooseCursor = neverShowCursor
         , appHandleEvent = \event -> case event of
+            -- `q` to quit the TUI
             VtyEvent (V.EvKey (V.KChar 'q') []) -> halt
-            VtyEvent (V.EvKey V.KLeft []) ->
+            -- Left and Right to move the cursor around
+            VtyEvent (V.EvKey (V.KChar 'h') []) ->
                 modify (moveCursor (-1))
-            VtyEvent (V.EvKey V.KRight []) ->
+            VtyEvent (V.EvKey (V.KChar 'l') []) ->
                 modify (moveCursor 1)
             _ -> return ()
         , appStartEvent = return ()

@@ -4,30 +4,42 @@ module Values where
 
 import Brick
 import qualified Data.HashMap.Strict as HM
+import Data.List (sortOn)
 import qualified Data.Text as T
 import Haze
 import Types
 
-collectValues :: AppState -> HM.HashMap IdentifierCode WaveValue
+-- | Values at the cursor, in the same identifier order as the waveform rows.
+collectValues :: AppState -> [(IdentifierCode, WaveValue)]
 collectValues state =
-    -- state
     let waveConstruct = stateWaveConstruct state
         waveMap = wWaveform waveConstruct
         cursorTime = stateCursor state
-     in -- mapMaybe drops entries where we get a Nothing value
-        HM.mapMaybe (findFirstEntryGreaterThan cursorTime) waveMap
+     in sortOn -- sort by indentifier code
+            fst
+            [ (ident, value)
+            | (ident, entries) <- HM.toList waveMap
+            , Just value <- [findValueAtCursor cursorTime entries]
+            ]
   where
-    findFirstEntryGreaterThan :: SimulationTime -> [(SimulationTime, WaveValue)] -> Maybe WaveValue
-    findFirstEntryGreaterThan _ [] = Nothing
-    findFirstEntryGreaterThan targetTime ((time, value) : rest)
-        | targetTime <= time = Just value
-        | otherwise = findFirstEntryGreaterThan targetTime rest
+    -- Gets the most recent change at or before the cursor, not the next change after it.
+    findValueAtCursor :: SimulationTime -> [(SimulationTime, WaveValue)] -> Maybe WaveValue
+    findValueAtCursor targetTime = go Nothing
+      where
+        go :: Maybe WaveValue -> [(SimulationTime, WaveValue)] -> Maybe WaveValue
+        go current [] = current
+        go current ((time, value) : rest)
+            | time <= targetTime = go (Just value) rest
+            | otherwise = current
 
+{- | Constructs the widget which displays the Values of where the
+cursor has landed
+-}
 valueBar :: AppState -> [Widget n]
 valueBar state =
     buildWidgets values
   where
-    values = HM.elems (collectValues state)
+    values = map snd (collectValues state)
 
     buildWidgets :: [WaveValue] -> [Widget n]
     buildWidgets [] = []
