@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module SignalList where
+module Panes.SignalList where
 
 import Attributes
 import Brick
@@ -23,7 +23,7 @@ signalList state =
     )
         <+> vBorder
   where
-    selectedIndex = stateSelectedSignal state
+    selectedIndex = signalListSelectedSignal (stateSignalList state)
     identifierCodes = wcIdentifierCodes waveConstruct
     selectedIdentifierCode = identifierCodes !! selectedIndex
     waveConstruct = stateWaveConstruct state
@@ -42,7 +42,7 @@ signalList state =
 
 addSignal :: AppState -> AppState
 addSignal state =
-    let selectedIndex = stateSelectedSignal state
+    let selectedIndex = signalListSelectedSignal (stateSignalList state)
         waveConstruct = stateWaveConstruct state
         identifierCodes = wcIdentifierCodes waveConstruct
 
@@ -51,16 +51,18 @@ addSignal state =
 
         -- append the selected IdentifierCode to the list of displayed
         -- identifer codes
-        displayedWaves = stateDisplayedIdentifiers state ++ [selectedIdentifierCode]
+        waveformState = stateWaveform state
+        displayedWaves = waveformDisplayedIdentifiers waveformState ++ [selectedIdentifierCode]
      in state
-            { stateDisplayedIdentifiers = displayedWaves
+            { stateWaveform = waveformState {waveformDisplayedIdentifiers = displayedWaves}
             }
 
 changeSelectedSignal :: Int -> AppState -> AppState
 changeSelectedSignal diff state =
     -- TODO: Cap how high it can go; currently it crashes if we go
     -- to the max + 1
-    let new_index = max 0 ((stateSelectedSignal state) + diff)
+    let signalListState = stateSignalList state
+        newIndex = max 0 (signalListSelectedSignal signalListState + diff)
      in state
-            { stateSelectedSignal = new_index
+            { stateSignalList = signalListState {signalListSelectedSignal = newIndex}
             }

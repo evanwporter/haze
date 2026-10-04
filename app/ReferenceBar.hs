@@ -20,9 +20,9 @@ referenceBar state =
   where
     waveConstruct = stateWaveConstruct state
     identifierMap = wcSymbolMap waveConstruct
-    idents = stateDisplayedIdentifiers state
+    idents = waveformDisplayedIdentifiers (stateWaveform state)
     references = mapMaybe (flip HM.lookup identifierMap) idents
-    selectedIndex = stateSelectedIndex state
+    selectedIndex = waveformSelectedIndex (stateWaveform state)
     selectedIdent = (idents !!) <$> selectedIndex
     buildWidget (ident, reference)
         | Just ident == selectedIdent = withAttr selectedAttr (refToTxt reference)

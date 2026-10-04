@@ -12,7 +12,8 @@ cursorLayer state =
         vBox $
             replicate (height) (txt "|") -- TODO: make this a solid background color or something nicer
   where
-    SimulationTime t = stateCursor state
+    waveformState = stateWaveform state
+    SimulationTime t = waveformCursor waveformState
 
     -- waveformLayer starts after the reference bar, value bar, separators,
     -- and its left pad.  Time zero is the first waveform column.
@@ -20,12 +21,11 @@ cursorLayer state =
     -- screen position.
     cursorX = t * columnsPerTick + waveformDisplayXOffset + 3
 
-    height = ((length $ stateDisplayedIdentifiers state) * 2) - 1
+    height = (length (waveformDisplayedIdentifiers waveformState) * 2) - 1
 
 moveCursor :: Int -> AppState -> AppState
 moveCursor amount state =
-    state
-        { stateCursor = SimulationTime (max 0 (t + amount))
-        }
+    state {stateWaveform = waveformState {waveformCursor = SimulationTime (max 0 (t + amount))}}
   where
-    SimulationTime t = stateCursor state
+    waveformState = stateWaveform state
+    SimulationTime t = waveformCursor waveformState
